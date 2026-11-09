@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Anatomy of a Worker</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:48px}
+  .sub{font-size:17px}
+  .n{position:absolute;width:248px;height:92px;z-index:3;background:#fff;border:1px solid var(--line);padding:12px 14px}
+  .n .tag{font-size:10px;color:var(--grey);display:flex;justify-content:space-between}
+  .n h3{font:600 16.5px var(--sans);letter-spacing:-.3px;margin-top:5px}
+  .n p{font:400 11px/1.4 var(--mono);color:var(--char);margin-top:4px}
+  .n.agent{border:1.5px solid var(--pink);box-shadow:5px 5px 0 var(--pink)}
+  .n.gate{border-color:var(--ink)}
+  .n.chg{border-style:dashed;border-color:var(--ink)}
+  .r1{top:206px}.r2{top:362px}
+  .c1{left:72px}.c2{left:368px}.c3{left:664px}.c4{left:960px}
+  .appr{position:absolute;left:676px;top:494px;width:224px;height:34px;z-index:3;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--ink);border-radius:17px;background:#FFF8DB;font:600 11px var(--mono);letter-spacing:.05em;text-transform:uppercase;transition:transform .15s,background .15s}
+  .appr.press{transform:scale(.94);background:var(--yellow)}
+  .verdict{position:absolute;left:1000px;top:316px;z-index:4;font:600 10px var(--mono);letter-spacing:.05em;text-transform:uppercase;background:var(--pink);color:#fff;padding:4px 8px;opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s}
+  .verdict.show{opacity:1;transform:none}
+  #wires{position:absolute;left:0;top:0;width:1280px;height:720px;z-index:2;overflow:visible}
+  #wires text{font:500 10px var(--mono);letter-spacing:.05em;text-transform:uppercase;fill:var(--grey)}
+  .notes{position:absolute;left:72px;right:72px;top:560px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;z-index:3}
+  .notes div{display:grid;grid-template-columns:96px 1fr;gap:12px;border-top:1px solid var(--ink);padding-top:10px}
+  .notes b{font:600 15px var(--mono);color:var(--blue);letter-spacing:-.3px}
+  .notes p{font-size:12.5px;line-height:1.45;color:var(--char)}
+</style>
+</head>
+<body data-foot="03 · AlertZero · Anatomy of a Worker">
+<div class="z">
+  <div class="eyebrow in1">03 · AlertZero · <b>Under the hood</b></div>
+  <h1 class="in2">Every Worker has <span class="b">the same shape.</span></h1>
+  <p class="sub in3">A thin per-space workflow starts a shared one. One model call per item. Every change stops at a gate.</p>
+</div>
+<svg id="wires" viewBox="0 0 1280 720"></svg>
+<div class="n r1 c1" data-step="1"><div class="tag">01 · Trigger</div><h3>Schedule or poll</h3><p>15m · 1h · 2h · 4h · 24h, or a 1-minute indicator poll</p></div>
+<div class="n r1 c2" data-step="1" style="transition-delay:.1s"><div class="tag">02 · Space Worker</div><h3>Owns the settings</h3><p>run_as alertzero_* · autonomy · budget · lookback</p></div>
+<div class="n r1 c3" data-step="1" style="transition-delay:.2s"><div class="tag">03 · Shared workflow</div><h3>Gathers the evidence</h3><p>alerts · entities · raw events, fanned out per item</p></div>
+<div class="n r1 c4 agent" data-step="2"><div class="tag">04 · AI step<span style="color:var(--pink)">Model</span></div><h3>One judgement call</h3><p>alertzero-thin-agent · tools: [ ] · evidence in the prompt</p></div>
+<div class="verdict" id="verdict">Verdict + reasons</div>
+<div class="n r2 c4" data-step="3"><div class="tag">05 · Investigation</div><h3>The case file</h3><p>journal · notes · attachments · live summary</p></div>
+<div class="n r2 c3 gate" data-step="3" style="transition-delay:.1s"><div class="tag">06 · Proposal<span style="color:#7A5A00">Gate</span></div><h3>Waits for a decision</h3><p>waitForApproval · expires after 72 h</p></div>
+<div class="appr" id="appr" data-step="3" style="transition-delay:.2s">Analyst · Approve / Dismiss</div>
+<div class="n r2 c2" data-step="4"><div class="tag">07 · Action workflow</div><h3>Runs as the approver</h3><p>system-alertzero-action-*</p></div>
+<div class="n r2 c1 chg" data-step="4" style="transition-delay:.1s"><div class="tag">08 · The change</div><h3>Something happens</h3><p>alerts closed · host isolated · rule enabled</p></div>
+<div class="notes">
+  <div data-step="2"><b>tools: [ ]</b><p>The model can't go and look. The workflow fetches the evidence first, so cost and results stay predictable.</p></div>
+  <div data-step="3"><b>72 h</b><p>A Proposal waits up to three days. If nobody decides, it is recorded as expired, never as dismissed.</p></div>
+  <div data-step="4"><b>run_as</b><p>An approved action runs as the person who clicked Approve, so the audit trail always names a human.</p></div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const svg = document.getElementById('wires');
+  const mk = (d, step, lab, lx, ly) => {
+    const g = EW.el('g', {opacity: 0}, svg); g.style.transition = 'opacity .5s'; g.dataset.k = step;
+    EW.el('path', {d, fill: 'none', stroke: '#1D1E24', 'stroke-width': 1.2, 'marker-end': 'url(#ah)'}, g);
+    if (lab){ const t = EW.el('text', {x: lx, y: ly, 'text-anchor': 'middle'}, g); t.textContent = lab; }
+    return g;
+  };
+  const defs = EW.el('defs', {}, svg), m = EW.el('marker', {id: 'ah', viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto'}, defs);
+  EW.el('path', {d: 'M0 0L10 5L0 10z', fill: '#1D1E24'}, m);
+  const wires = [
+    mk('M320,252 H366', 1), mk('M616,252 H662', 1), mk('M912,252 H958', 2),
+    mk('M1084,298 V360', 3), mk('M958,408 H914', 3), mk('M788,492 V456', 3),
+    mk('M662,408 H618', 4), mk('M366,408 H322', 4)
+  ];
+  // the work item: travels the chain, waits at the gate for a person, then goes through
+  const route = EW.el('path', {d: 'M196,252 H1084 V408 H196', fill: 'none', stroke: 'none'}, svg);
+  const L = route.getTotalLength(), Lg = 888 + 156 + (1084 - 788), Lai = 888;
+  const pkt = EW.el('rect', {width: 12, height: 12, fill: '#0B64DD', stroke: '#fff', 'stroke-width': 1.5, opacity: 0}, svg);
+  const appr = document.getElementById('appr'), verdict = document.getElementById('verdict');
+  let s0 = 0, t0 = 0;
+  AZ.on(s => { s0 = s; wires.forEach(w => w.setAttribute('opacity', s >= +w.dataset.k ? 1 : 0)); t0 = performance.now(); });
+  EW.loop(() => {
+    if (s0 < 4 || AZ.still){ pkt.setAttribute('opacity', 0); appr.classList.remove('press'); verdict.classList.toggle('show', AZ.still); return; }
+    const t = ((performance.now() - t0) / 1000) % 7.2;
+    let at, press = false;
+    if (t < 3) at = Lg * EW.ease(t / 3);
+    else if (t < 4.6){ at = Lg; press = t > 3.6 && t < 4.0; }
+    else if (t < 6.2) at = Lg + (L - Lg) * EW.ease((t - 4.6) / 1.6);
+    else at = L;
+    const p = route.getPointAtLength(at);
+    pkt.setAttribute('x', p.x - 6); pkt.setAttribute('y', p.y - 6);
+    pkt.setAttribute('opacity', t > 6.6 ? Math.max(0, 1 - (t - 6.6) / .4) : Math.min(1, t * 4));
+    pkt.setAttribute('fill', at >= Lg && t >= 4 ? '#02BCB7' : '#0B64DD');
+    appr.classList.toggle('press', press);
+    verdict.classList.toggle('show', at > Lai - 10 && at < Lai + 160);
+  });
+})();
+</script>
+</body>
+</html>

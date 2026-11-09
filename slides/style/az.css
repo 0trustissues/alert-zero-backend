@@ -1,0 +1,45 @@
+/* AlertZero deck: click-through builds and shared components on top of eweb.css. */
+
+/* Builds: data-step="n" appears on the n-th click, data-off="n" leaves on it. */
+[data-step],[data-off]{transition:opacity .55s cubic-bezier(.2,.7,.2,1),transform .55s cubic-bezier(.2,.7,.2,1),clip-path .9s cubic-bezier(.6,0,.2,1)}
+[data-step]{opacity:0;transform:translateY(14px)}
+[data-step][data-fx=left]{transform:translateX(-22px)}
+[data-step][data-fx=right]{transform:translateX(22px)}
+[data-step][data-fx=pop]{transform:scale(.92)}
+[data-step][data-fx=fade]{transform:none}
+[data-step][data-fx=wipe]{opacity:1;transform:none;clip-path:inset(0 100% 0 0)}
+[data-step].on,[data-step][data-fx].on{opacity:1;transform:none}
+[data-step][data-fx=wipe].on{clip-path:inset(-24px -24px -24px -24px)}
+[data-off]:not(.on){opacity:0;pointer-events:none}
+svg [data-step]{transform:none}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1s cubic-bezier(.6,0,.2,1),opacity .3s}
+.draw.on{stroke-dashoffset:0}
+[data-dim]{transition:opacity .45s,filter .45s}
+.dim{opacity:.3}
+.az-still *,.az-still *::before,.az-still *::after{transition:none!important}
+.az-still .in1,.az-still .in2,.az-still .in3,.az-still .in4,.az-still .in5,.az-still .in6,.az-still .wipe{animation:none!important}
+
+/* Build progress, bottom centre: one square per click on this slide. */
+.az-pips{position:absolute;left:50%;bottom:33px;transform:translateX(-50%);display:flex;gap:5px;z-index:6}
+.az-pips i{width:6px;height:6px;border:1px solid var(--grey-l);transition:background .3s,border-color .3s}
+.az-pips i.on{background:var(--blue);border-color:var(--blue)}
+body.ink .az-pips i{border-color:rgba(255,255,255,.35)}
+body.ink .az-pips i.on{background:#fff;border-color:#fff}
+
+/* Shared components */
+.kick{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--blue)}
+.gate{background:#FFF8DB;border:1px solid var(--ink);box-shadow:4px 4px 0 var(--yellow)}
+.agent{border:1.5px solid var(--pink)}
+.win{position:absolute;z-index:2;background:#fff;border:1px solid var(--ink);box-shadow:10px 10px 0 var(--blue)}
+.win .bar{display:flex;align-items:center;gap:7px;height:32px;padding:0 14px;border-bottom:1px solid var(--ink);font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--char)}
+.win .bar i{width:9px;height:9px;border:1px solid var(--ink);border-radius:50%}
+.win .bar span{margin-left:10px}
+.v{display:inline-flex;align-items:center;font:600 9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border:1px solid;white-space:nowrap}
+.v.fp{color:#027A76;border-color:var(--teal-d);background:#E6FBF7}
+.v.tp{color:#C42A21;border-color:#E0352B;background:#FDEDEC}
+.v.inc{color:var(--char);border-color:var(--slate);background:var(--bg)}
+.v.ask{color:#7A5A00;border-color:#C9A100;background:#FFF8DB}
+.v.auto{color:var(--blue);border-color:var(--blue);background:#fff}
+.num{font-variant-numeric:tabular-nums}
+@keyframes az-pulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.9);opacity:0}}
+@keyframes az-blink{50%{opacity:0}}

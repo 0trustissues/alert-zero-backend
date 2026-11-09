@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Elastic: Search AI Platform</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  h1{font-size:62px;letter-spacing:-2.4px;margin-top:12px}
+  .sub{font-size:18px;margin-top:8px}
+  .sub .t{color:var(--teal-d);font-weight:500}
+  h2{font:600 26px/1.1 var(--sans);letter-spacing:-.6px;margin-top:30px}
+  h2 .g{color:var(--grey)}
+  .prods{margin-top:16px;width:470px;display:flex;flex-direction:column}
+  .prod{display:grid;grid-template-columns:120px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+  .prod:last-child{border-bottom:1px solid var(--line)}
+  .prod .tag{display:flex;align-items:center;gap:8px;margin-top:4px}
+  .prod .nm{font:600 19px var(--sans);letter-spacing:-.3px;margin-top:6px}
+  .prod p{font-size:13.5px;line-height:1.45;color:var(--char)}
+  .prod .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+  .prod .chip{font-size:10px;padding:3px 7px}
+  #pf{position:absolute;z-index:1;left:462px;top:112px;width:808px;height:557px;overflow:visible}
+  #pf text{font-family:var(--mono);font-size:12.5px;letter-spacing:.07em;fill:#1D1E24}
+  #pf .r{font-weight:400;fill:#343741}
+  #pf .b{font-weight:700}
+</style>
+</head>
+<body class="soft" data-foot="Search AI Platform">
+<div class="z">
+  <div class="eyebrow in1">Elastic · The Search AI Company</div>
+  <h1 class="in2">Meet <span class="b">Search AI</span></h1>
+  <p class="sub in2">The fusion of <span class="b">search</span> and <span class="t">artificial intelligence</span></p>
+  <h2 class="in3">One platform. <span class="g">Three products.</span></h2>
+  <div class="prods">
+    <div class="prod in4"><div><span class="tag"><i class="sw" style="background:var(--blue)"></i>Foundation</span><div class="nm">Elasticsearch</div></div>
+      <div><p>The search and analytics engine at the core of every Elastic product. Build any app on top.</p><div class="chips"><span class="chip">Vector Database</span><span class="chip">AI Index</span><span class="chip">Analytics</span><span class="chip">ES|QL</span></div></div></div>
+    <div class="prod in5"><div><span class="tag"><i class="sw" style="background:var(--pink)"></i>Solution</span><div class="nm">Observability</div></div>
+      <div><p>Unified logs, metrics, and traces at AI scale: with an AI SRE agent built in.</p><div class="chips"><span class="chip">Logs</span><span class="chip">Metrics</span><span class="chip">Traces</span><span class="chip">Profiles</span><span class="chip">Synthetics</span><span class="chip">AI SRE</span></div></div></div>
+    <div class="prod in6"><div><span class="tag"><i class="sw" style="background:var(--orange)"></i>Solution</span><div class="nm">Security</div></div>
+      <div><p>AI-native SIEM, EDR, and cloud security: detect, investigate, and respond in one platform.</p><div class="chips"><span class="chip">SIEM</span><span class="chip">EDR</span><span class="chip">Cloud Security</span></div></div></div>
+  </div>
+</div>
+<svg id="pf" viewBox="0 0 860 593"></svg>
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  // Geometry measured from the official Elastic platform graphic (860x593 artboard).
+  const svg = document.getElementById('pf'), NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); (p || svg).appendChild(e); return e; };
+  const P = (x, y, z) => [385 + (x - y) * .8660254, 404 + (x + y) * .5 - z];
+  const pts = a => a.map(q => P(...q).map(v => v.toFixed(1)).join(',')).join(' ');
+  const defs = el('defs', {});
+  const blur = el('filter', {id: 'pfb', x: '-40%', y: '-40%', width: '180%', height: '180%'}, defs); el('feGaussianBlur', {stdDeviation: 10}, blur);
+  const tg = el('linearGradient', {id: 'pft', x1: 0, y1: 0, x2: 1, y2: 0}, defs);
+  el('stop', {offset: 0, 'stop-color': '#48EFCF', 'stop-opacity': 0}, tg); el('stop', {offset: 1, 'stop-color': '#48EFCF', 'stop-opacity': .85}, tg);
+  const anims = [];
+  const layer = (o) => { const g = el('g', {opacity: 0}); anims.push(Object.assign({g}, o)); return g; };
+  function box(g, x, y, z, w, d, h, F, st){
+    const zt = z + h, s = st ? {stroke: st.c, 'stroke-width': st.w || 1, 'stroke-linejoin': 'round'} : {};
+    el('polygon', Object.assign({points: pts([[x, y + d, zt], [x + w, y + d, zt], [x + w, y + d, z], [x, y + d, z]]), fill: F[1]}, s), g);
+    el('polygon', Object.assign({points: pts([[x + w, y, zt], [x + w, y + d, zt], [x + w, y + d, z], [x + w, y, z]]), fill: F[2]}, s), g);
+    el('polygon', Object.assign({points: pts([[x, y, zt], [x + w, y, zt], [x + w, y + d, zt], [x, y + d, zt]]), fill: F[0]}, s), g);
+  }
+  const SLATE = ['#FFFFFF', '#DDE3EC', '#B5BFCE'], TEAL = ['#FFFFFF', '#48EFCF', '#02BCB7'], BLUE = ['#FFFFFF', '#0B64DD', '#B5BFCE'];
+  const H = 89, PZ = 106, CZ = 106, A = 72, CH = 88;
+
+  el('polygon', {points: pts([[-96, -150, 0], [104, -150, 0], [104, 56, 0], [-96, 56, 0]]), fill: 'rgba(60,75,110,.22)', filter: 'url(#pfb)', transform: 'translate(-6,14)', class: 'fs'});
+  box(layer({t: .05, dy: 46}), -108, 0, 0, 89, 36, 88, BLUE);
+  const slabs = [[-162, TEAL], [-108, SLATE], [-54, SLATE], [0, SLATE]];
+  slabs.forEach(([y, F], i) => box(layer({t: .12 + i * .09, dy: 46}), 0, y, 0, 88, 36, H, F));
+
+  const plane = layer({t: .62, dy: 0, d: .5});
+  el('polygon', {points: pts([[0, -162, H], [88, -162, H], [88, -126, H], [0, -126, H]]), fill: 'url(#pft)'}, plane);
+  el('polygon', {points: pts([[-108, -162, PZ], [88, -162, PZ], [88, 36, PZ], [-108, 36, PZ]]), fill: 'rgba(255,255,255,.62)', stroke: '#1D1E24', 'stroke-width': 2.2, 'stroke-dasharray': '2.2 4.4'}, plane);
+
+  const gx = 33 - A, gy = -19 - A;
+  const cubes = [
+    {x: gx, y: gy - 89, F: ['#FFFFFF', '#F04E98', '#343741'], t: 1.02, float: 1},
+    {x: gx - 91, y: gy, F: ['#FFFFFF', '#FF7E62', '#343741'], t: .92, float: 1, ph: 1.3},
+  ];
+  cubes.forEach(c => { c.sh = layer({t: c.t, dy: 0, d: .4});
+    el('polygon', {points: pts([[c.x, c.y, CZ], [c.x + A, c.y, CZ], [c.x + A, c.y + A, CZ], [c.x, c.y + A, CZ]]), fill: 'rgba(60,75,110,.28)', filter: 'url(#pfb)', transform: 'translate(0,10)'}, c.sh); });
+  cubes.forEach(c => { c.g = layer({t: c.t, dy: -70, float: c.float, ph: c.ph || 0}); box(c.g, c.x, c.y, CZ, A, A, CH, c.F, {c: '#1D1E24'}); });
+
+  const glass = layer({t: 1.12, dy: -70});
+  const gz = CZ, gs = {stroke: '#4A4E5A', 'stroke-width': 1, 'stroke-linejoin': 'round'};
+  el('path', Object.assign({d: `M${P(gx, gy, gz + CH)}L${P(gx, gy, gz)}M${P(gx, gy, gz)}L${P(gx + A, gy, gz)}M${P(gx, gy, gz)}L${P(gx, gy + A, gz)}`, fill: 'none', 'stroke-opacity': .5}, gs), glass);
+  el('polygon', Object.assign({points: pts([[gx, gy + A, gz + CH], [gx + A, gy + A, gz + CH], [gx + A, gy + A, gz], [gx, gy + A, gz]]), fill: 'rgba(52,55,65,.62)'}, gs), glass);
+  el('polygon', Object.assign({points: pts([[gx + A, gy, gz + CH], [gx + A, gy + A, gz + CH], [gx + A, gy + A, gz], [gx + A, gy, gz]]), fill: 'rgba(255,255,255,.32)'}, gs), glass);
+  el('polygon', Object.assign({points: pts([[gx, gy, gz + CH], [gx + A, gy, gz + CH], [gx + A, gy + A, gz + CH], [gx, gy + A, gz + CH]]), fill: 'rgba(255,255,255,.18)'}, gs), glass);
+
+  const labels = [
+    {lines: [['Elastic', 'b'], ['Security', 'b'], ['Solution', 'r']], x: 227, y: 167, a: 'end', ln: [237, 185, 322], t: 1.3},
+    {lines: [['Elasticsearch', 'b'], ['The search', 'r'], ['database', 'r']], x: 227, y: 309, a: 'end', ln: [237, 327, 283], t: 1.38},
+    {lines: [['Elastic', 'b'], ['Observability', 'b'], ['Solution', 'r']], x: 634, y: 167, a: 'start', ln: [624, 185, 540], t: 1.46},
+    {lines: [['Jina AI', 'b', ' - models']], x: 634, y: 336, a: 'start', ln: [624, 332, 588], t: 1.5},
+    {lines: [['Kibana', 'b', ' - visualize']], x: 634, y: 363, a: 'start', ln: [624, 359, 540], t: 1.56},
+    {lines: [['Workflows', 'b', ' - automation']], x: 634, y: 390, a: 'start', ln: [624, 386, 492], t: 1.62},
+    {lines: [['Streams', 'b', ' - ingest']], x: 634, y: 417, a: 'start', ln: [624, 413, 446], t: 1.68},
+  ];
+  const labelG = el('g', {});
+  labels.forEach(L => {
+    const [x1, y, x2] = L.ln, len = Math.abs(x2 - x1);
+    L.line = el('line', {x1, y1: y, x2, y2: y, stroke: '#1D1E24', 'stroke-width': 1, 'stroke-dasharray': len, 'stroke-dashoffset': len}, labelG); L.len = len;
+    L.txt = el('g', {opacity: 0}, labelG);
+    L.lines.forEach(([t, c, tail], i) => { const e = el('text', {x: L.x, y: L.y + i * 17.5, 'text-anchor': L.a}, L.txt);
+      el('tspan', {class: c}, e).textContent = t.toUpperCase();
+      if (tail) el('tspan', {class: 'r'}, e).textContent = tail.toUpperCase(); });
+  });
+
+  const back = t => { if (t <= 0) return 0; if (t >= 1) return 1; const c = 1.4; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
+  const ease = t => t <= 0 ? 0 : t >= 1 ? 1 : 1 - Math.pow(1 - t, 3);
+  const t0 = performance.now(), fs = svg.querySelector('.fs'); fs.setAttribute('opacity', 0);
+  (function f(now){
+    const t = (now - t0) / 1000;
+    fs.setAttribute('opacity', ease(t / .7));
+    anims.forEach(a => { const k = (t - a.t) / (a.d || .6), e = a.dy ? back(k) : ease(k);
+      let dy = a.dy * (1 - e); if (a.float && k > 1) dy += Math.sin((t - a.t - .6) * 1.2 + (a.ph || 0)) * 4;
+      a.g.setAttribute('opacity', Math.min(1, Math.max(0, k * 2.2))); a.g.setAttribute('transform', `translate(0,${dy.toFixed(2)})`); });
+    cubes.forEach(c => { if ((t - c.t) > .6) c.sh.setAttribute('opacity', .75 + .25 * Math.cos((t - c.t - .6) * 1.2 + (c.ph || 0))); });
+    labels.forEach(L => { L.line.setAttribute('stroke-dashoffset', L.len * (1 - ease((t - L.t) / .35))); L.txt.setAttribute('opacity', ease((t - L.t - .15) / .3)); });
+    requestAnimationFrame(f);
+  })(t0);
+  EW.dots({x: 560, y: 40, w: 720, h: 640, gap: 8.5, r: .85, color: [200, 207, 218], seed: 21, blobsList: [{x: 360, y: 250, r: 330}, {x: 560, y: 420, r: 260}, {x: 150, y: 470, r: 200}, {x: 620, y: 120, r: 180}], thr: .62});
+})();
+</script>
+</body>
+</html>

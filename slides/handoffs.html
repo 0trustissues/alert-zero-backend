@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hand-offs through data</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:40px;letter-spacing:-1.2px}
+  .sub{font-size:16.5px;max-width:980px}
+  .lane{position:absolute;left:72px;width:1136px;z-index:1}
+  .lane b{position:absolute;left:14px;top:12px;font:600 13px var(--sans);letter-spacing:-.2px}
+  .lane small{position:absolute;left:14px;top:30px;font:500 9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--char);opacity:.7}
+  .l-hunt{background:#FFF6D6}.l-det{background:#E8EFFC}.l-tri{background:#DDF7F3}.l-for{background:#FDE5F0}
+  .nd{position:absolute;width:176px;height:36px;z-index:3;background:#fff;border:1px solid rgba(29,30,36,.35);display:flex;flex-direction:column;justify-content:center;padding:0 10px;font:600 11.5px var(--sans);line-height:1.15}
+  .nd small{font:400 9.5px var(--mono);color:var(--grey);letter-spacing:.02em;margin-top:2px}
+  .nd.agent{border:1.5px solid var(--pink)}
+  .nd.gate{box-shadow:3px 3px 0 var(--yellow)}
+  #wires{position:absolute;left:0;top:0;width:1280px;height:720px;z-index:2;overflow:visible}
+  #wires text{font:600 10px var(--mono);letter-spacing:.04em}
+  .cap{position:absolute;left:72px;right:72px;top:630px;font-size:14px;color:var(--char);z-index:3}
+  .cap b{color:var(--ink)}
+  .key{position:absolute;right:72px;top:58px;display:flex;gap:16px;font:500 10px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--char);z-index:3}
+  .key span{display:flex;align-items:center;gap:6px}
+  .key i{display:inline-block;width:16px;height:10px;background:#fff;border:1px solid rgba(29,30,36,.35)}
+</style>
+</head>
+<body data-foot="03 · AlertZero · Hand-offs">
+<div class="z">
+  <div class="eyebrow in1">03 · AlertZero · <b>How work moves</b></div>
+  <h1 class="in2">Watches never call each other. <span class="b">They hand off through data.</span></h1>
+  <p class="sub in3">A small record in the Context Engine, or alerts someone closed. Turn any Worker off and nothing breaks: the work just waits.</p>
+</div>
+<div class="key in3"><span><i style="border:1.5px solid var(--pink)"></i>Model call</span><span><i style="box-shadow:3px 3px 0 var(--yellow)"></i>Proposal</span><span><i style="border:1px dashed var(--ink);background:none"></i>Hand-off</span></div>
+<svg id="wires" viewBox="0 0 1280 720"></svg>
+<div id="board"></div>
+<div class="cap" data-step="4"><b>Approving a forensics hand-off does not start forensics.</b> It writes an indicator; Endpoint Analysis sees it on its next one-minute check.</div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const board = document.getElementById('board'), svg = document.getElementById('wires');
+  const COL = i => 252 + i * 192, ROW = {h: 222, d1: 296, d2: 344, t1: 416, t2: 464, f: 548};
+  const lanes = [['l-hunt', 'Hunt Watch', 'every 4 h', 200, 68], ['l-det', 'Detection Watch', 'every 1–2 h', 278, 112], ['l-tri', 'Triage Watch', '15 min · 24 h', 400, 112], ['l-for', 'Forensics Watch', 'polls 1 min', 522, 70]];
+  lanes.forEach(([c, b, s, top, h], i) => { const d = document.createElement('div'); d.className = `lane ${c} in${i + 2}`; d.style.top = top + 'px'; d.style.height = h + 'px'; d.innerHTML = `<b>${b}</b><small>${s}</small>`; board.appendChild(d); });
+  const N = {};
+  const node = (id, col, row, name, sub, cls) => { const d = document.createElement('div'); d.className = 'nd in4 ' + (cls || ''); d.style.left = COL(col) + 'px'; d.style.top = ROW[row] + 'px'; d.innerHTML = `${name}<small>${sub}</small>`; board.appendChild(d); N[id] = {x: COL(col), y: ROW[row]}; };
+  node('feed', 0, 'h', 'Ingest threat feeds', 'threat reports'); node('enr', 1, 'h', 'Enrich report', 'IoCs · TTPs · severity', 'agent'); node('hunt', 2, 'h', 'Continuous Hunt', 'up to 10 reports'); node('q', 3, 'h', 'Hunt the tradecraft', 'IoCs, then behaviour', 'agent'); node('resp', 4, 'h', 'Respond', 'e.g. isolate host', 'gate');
+  node('cov', 2, 'd1', 'Rule Coverage', 'up to 5 gaps a run'); node('covr', 3, 'd1', 'Coverage review', 'which rule closes it?', 'agent'); node('fix', 4, 'd1', 'Enable / install / draft', 'new rules ship disabled', 'gate');
+  node('tun', 2, 'd2', 'Rule Tuning', '7-day FP window'); node('tunr', 3, 'd2', 'Tuning review', 'plus a backtest', 'agent'); node('edit', 4, 'd2', 'Edit query / exception', 'always asks', 'gate');
+  node('tri', 0, 't1', 'Alert Triage', '1,300 alerts / h budget'); node('ana', 1, 't1', 'Alert analysis', 'one verdict per alert', 'agent'); node('close', 2, 't1', 'Close false positives', 'confidence ≥ 0.85', 'gate');
+  node('ad', 0, 't2', 'Attack Discovery', 'drops invented alert IDs'); node('fptp', 1, 't2', 'FP / TP analysis', 'four checks', 'agent'); node('rev', 2, 't2', 'Review per attack', 'opens the Investigation'); node('ho', 3, 't2', 'Hand off to forensics', 'true positive or unsure', 'gate');
+  node('ep', 1, 'f', 'Endpoint Analysis', 'picks up the indicator'); node('fa', 2, 'f', 'Forensic agent', 'timeline · IoCs', 'agent'); node('cont', 3, 'f', 'Containment', 'isolate · kill · dump', 'gate'); node('ci', 4, 'f', 'Close Investigation', 'always asks', 'gate');
+  // in-lane arrows
+  const g0 = EW.el('g', {class: 'in5'}, svg);
+  [['feed', 'enr'], ['enr', 'hunt'], ['hunt', 'q'], ['q', 'resp'], ['cov', 'covr'], ['covr', 'fix'], ['tun', 'tunr'], ['tunr', 'edit'], ['tri', 'ana'], ['ana', 'close'], ['ad', 'fptp'], ['fptp', 'rev'], ['rev', 'ho'], ['ep', 'fa'], ['fa', 'cont'], ['cont', 'ci']]
+    .forEach(([a, b]) => EW.el('line', {x1: N[a].x + 176, y1: N[a].y + 18, x2: N[b].x - 2, y2: N[b].y + 18, stroke: '#1D1E24', 'stroke-width': 1, opacity: .55}, g0));
+  // the three hand-offs, all through data
+  const hand = (d, label, lx, ly, step, col) => {
+    const g = EW.el('g', {opacity: 0}, svg); g.style.transition = 'opacity .5s';
+    const p = EW.el('path', {d, fill: 'none', stroke: '#1D1E24', 'stroke-width': 1.5, 'stroke-dasharray': '5 4'}, g);
+    const t = EW.el('text', {x: lx, y: ly, fill: col}, g); t.textContent = label;
+    const ctl = AZ.flow(p, {n: 2, dur: 2.2, r: 5, fill: col, on: false, shape: 'rect', parent: g});
+    return {g, ctl, step};
+  };
+  const H = [
+    hand(`M${N.q.x + 88},${N.q.y + 36} V${N.cov.y - 9} H${N.cov.x + 88} V${N.cov.y}`, 'security.coverage gap indicator', N.cov.x + 100, N.cov.y - 14, 1, '#B8860B'),
+    hand(`M${N.close.x + 88},${N.close.y} V${N.tun.y + 36}`, 'closed false positives teach tuning', N.close.x + 96, N.close.y - 14, 2, '#027A76'),
+    hand(`M${N.ho.x + 88},${N.ho.y + 36} V${N.ep.y - 10} H${N.ep.x + 88} V${N.ep.y}`, 'approved → security.analyze_endpoint indicator', N.ep.x + 100, N.ep.y - 15, 3, '#D6337F')
+  ];
+  AZ.on(s => H.forEach(h => { h.g.setAttribute('opacity', s >= h.step ? 1 : 0); h.ctl.on = s >= h.step; }));
+})();
+</script>
+</body>
+</html>

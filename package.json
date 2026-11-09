@@ -1,5 +1,5 @@
 {
-  "name": "alert-zero-backend",
+  "name": "alertzero-deck",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -8,6 +8,6 @@
     "pdf": "fslides pdf"
   },
   "devDependencies": {
-    "fslides": "^0.6.0"
+    "fslides": "^0.7.1"
   }
 }

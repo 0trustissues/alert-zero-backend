@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Forensics Watch</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:46px;max-width:540px}
+  .sub{font-size:16px;max-width:520px}
+  .steps{margin-top:22px;width:530px;display:flex;flex-direction:column}
+  .st{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+  .st:last-child{border-bottom:1px solid var(--line)}
+  .st .k{font:600 12px var(--mono);color:var(--pink);padding-top:2px}
+  .st h3{font:600 15px var(--sans);letter-spacing:-.2px}
+  .st p{font-size:12.5px;line-height:1.45;color:var(--grey);margin-top:2px}
+  .fn{margin-top:12px;font:400 10.5px var(--mono);color:var(--grey);width:530px}
+  .win{left:640px;top:84px;width:568px;height:566px;box-shadow:10px 10px 0 var(--pink)}
+  .in-hd{padding:14px 18px 10px;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;align-items:flex-start}
+  .in-hd h3{font:600 17px var(--sans);letter-spacing:-.3px}
+  .in-hd p{font:400 10.5px var(--mono);color:var(--grey);margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
+  .tl{position:relative;padding:10px 18px 4px 40px}
+  .tl::before{content:'';position:absolute;left:24px;top:14px;bottom:10px;width:1px;background:var(--line)}
+  .ev{position:relative;display:grid;grid-template-columns:62px 1fr;gap:10px;padding:4px 0;font:400 11.5px var(--mono);color:var(--ink)}
+  .ev::before{content:'';position:absolute;left:-20px;top:8px;width:7px;height:7px;background:#fff;border:1.5px solid var(--ink)}
+  .ev.bad::before{background:#E0352B;border-color:#E0352B}
+  .ev span:first-child{color:var(--grey)}
+  .iocs{padding:6px 18px 10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-bottom:1px dashed var(--line)}
+  .iocs .lb{font:600 9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--grey);margin-right:4px}
+  .iocs .chip{font-size:9.5px;padding:2px 6px;border-color:#E0352B;color:#C42A21;text-transform:none}
+  .acts{padding:10px 18px;display:flex;flex-direction:column;gap:6px}
+  .act{display:flex;align-items:center;justify-content:space-between;padding:7px 10px}
+  .act h4{font:600 13px var(--sans)}
+  .act .btn{font-size:11px;padding:4px 10px}
+  .act.lock{background:var(--bg);border:1px dashed var(--ink);box-shadow:none}
+</style>
+</head>
+<body data-foot="03 · AlertZero · Forensics Watch">
+<div class="z">
+  <div class="eyebrow in1">03 · Forensics Watch · <b>Endpoint Analysis</b></div>
+  <h1 class="in2">Deep research, <span class="b">then one decision per action.</span></h1>
+  <p class="sub in3">Starts when a forensics hand-off is approved. It works the host the way a senior responder would.</p>
+  <div class="steps">
+    <div class="st" data-step="1"><span class="k">01</span><div><h3>Picks up the hand-off within a minute</h3><p>Polls for pending security.analyze_endpoint indicators. Nothing calls it directly.</p></div></div>
+    <div class="st" data-step="2"><span class="k">02</span><div><h3>Rebuilds the host timeline</h3><p>The forensic agent orders the events, pulls out IoCs and gives a verdict.</p></div></div>
+    <div class="st" data-step="3"><span class="k">03</span><div><h3>Files it in the same Investigation</h3><p>Attaches the findings and acknowledges the attack and its alerts.</p></div></div>
+    <div class="st" data-step="4"><span class="k">04</span><div><h3>One proposal per containment action</h3><p>Isolate, kill or suspend, dump memory. When all are decided, Close Investigation always asks.</p></div></div>
+  </div>
+  <p class="fn" data-step="4">Containment runs through Elastic Defend on the host.</p>
+</div>
+<div class="win in3">
+  <div class="bar"><i></i><i></i><i></i><span>Investigation · ws-fin-114</span></div>
+  <div class="in-hd"><div><h3>Malware with service account abuse</h3><p>Hand-off approved · picked up in 38 s</p></div><span class="v tp" data-step="2" style="transition-delay:1.6s">True positive · high</span></div>
+  <div class="tl" id="tl"></div>
+  <div class="iocs" data-step="3"><span class="lb">IoCs</span><span class="chip">svch.dll 9f3c…e1a7</span><span class="chip">185.220.101.4</span><span class="chip">invoice_0412.zip</span><span class="chip">svc-backup</span></div>
+  <div class="acts">
+    <div class="act card gate" data-step="4"><h4>Isolate host ws-fin-114</h4><span class="btn fill">Approve</span></div>
+    <div class="act card gate" data-step="4" style="transition-delay:.12s"><h4>Kill process 4412 · rundll32.exe</h4><span class="btn fill">Approve</span></div>
+    <div class="act card gate" data-step="4" style="transition-delay:.24s"><h4>Dump process memory</h4><span class="btn fill">Approve</span></div>
+    <div class="act card lock" data-step="4" style="transition-delay:.5s"><h4>Close Investigation</h4><span class="v ask">Always asks</span></div>
+  </div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const ev = [
+    ['02:14:07', 'outlook.exe saved invoice_0412.zip', 0], ['02:14:22', 'wscript.exe ran invoice.js', 1],
+    ['02:14:31', 'powershell.exe -enc JABzAD0A…', 1], ['02:15:02', 'rundll32.exe C:\\Users\\Public\\svch.dll', 1],
+    ['02:16:40', 'svc-backup logon to srv-file-01', 1], ['02:17:11', 'outbound 185.220.101.4:443', 1]
+  ];
+  document.getElementById('tl').innerHTML = ev.map(([t, e, b], i) => `<div class="ev${b ? ' bad' : ''}" data-step="2" data-fx="left" style="transition-delay:${i * .2}s"><span>${t}</span><span>${e}</span></div>`).join('');
+})();
+</script>
+</body>
+</html>

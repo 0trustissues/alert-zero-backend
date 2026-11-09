@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>What if it never waited?</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:50px}
+  .sub{font-size:17px;max-width:960px}
+  .worked{position:absolute;left:72px;top:584px;width:602px;display:flex;justify-content:space-between;font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--grey);z-index:2}
+  .worked b{color:#027A76;font-weight:600}
+  .left{position:absolute;left:72px;top:214px;width:620px;z-index:2}
+  .big{font:600 120px/1 var(--sans);letter-spacing:-6px;color:var(--blue)}
+  .cap{font-size:15px;color:var(--char);margin-top:6px}
+  .legend{display:flex;gap:16px;margin-top:16px;font:500 10.5px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--char)}
+  .legend i{display:inline-block;width:8px;height:8px;margin-right:6px;vertical-align:0}
+  #grid{position:absolute;left:72px;top:418px;width:602px;height:156px;z-index:2}
+  .arrow{position:absolute;left:720px;top:290px;width:150px;height:40px;z-index:2}
+  .arrow i{position:absolute;left:0;top:13px;height:14px;width:100%;background:linear-gradient(90deg,#101C3F,#0B64DD);transform-origin:left;transform:scaleX(0);transition:transform .9s cubic-bezier(.6,0,.2,1)}
+  .arrow b{position:absolute;right:-18px;top:0;border-left:24px solid #0B64DD;border-top:20px solid transparent;border-bottom:20px solid transparent;opacity:0;transition:opacity .3s .7s}
+  body[data-at="2"] .arrow i,body[data-at="3"] .arrow i{transform:none}
+  body[data-at="2"] .arrow b,body[data-at="3"] .arrow b{opacity:1}
+  .one{position:absolute;left:930px;top:200px;width:280px;z-index:2;text-align:center}
+  .one .n{font:600 210px/1 var(--sans);letter-spacing:-8px;color:var(--pink)}
+  .one p{font-size:16px;color:var(--char);margin-top:-6px}
+  .one .card{margin-top:18px;text-align:left;box-shadow:6px 6px 0 var(--pink);border-color:var(--ink);padding:14px 16px}
+  .one .card .tag{font-size:10px;display:flex;justify-content:space-between}
+  .one .card h3{font:600 14.5px/1.3 var(--sans);margin-top:6px}
+  .banner{position:absolute;left:72px;right:72px;top:612px;height:52px;background:#fff;box-shadow:0 6px 24px rgba(30,40,80,.12);display:flex;align-items:center;justify-content:center;font:600 20px var(--sans);letter-spacing:-.4px;z-index:3}
+</style>
+</head>
+<body class="soft" data-foot="none">
+<div class="z">
+  <div class="eyebrow in1">01 · Why now · <b>The question</b></div>
+  <h1 class="in2">What if the queue <span class="b">never waited?</span></h1>
+  <p class="sub in3">Not just alerts: hunts, rule proposals, investigations and actions. Illustrative overnight volume.</p>
+</div>
+<div class="left in3">
+  <div class="big num" id="big">1,859</div>
+  <div class="cap">items overnight, each one waiting for a person</div>
+  <div class="legend"><span><i style="background:#E0352B"></i>Alerts</span><span><i style="background:var(--yellow)"></i>Hunts</span><span><i style="background:var(--blue)"></i>Rule proposals</span><span><i style="background:var(--orange)"></i>Investigations</span><span><i style="background:var(--teal-d)"></i>Actions</span></div>
+</div>
+<canvas id="grid" width="1204" height="312"></canvas>
+<div class="worked" data-step="1"><span>Closed with a reason <b class="num" id="closed">0</b></span><span>Still waiting <b class="num" id="left" style="color:var(--pink)">1,859</b></span></div>
+<div class="arrow"><i></i><b></b></div>
+<div class="one" data-step="2">
+  <div class="n">1</div>
+  <p>needs a decision</p>
+  <div class="card"><div class="tag">Proposal<span class="v ask">Waiting for you</span></div><h3>Isolate build-runner-07: backdoored dependency, evidence attached</h3></div>
+</div>
+<div class="banner" data-step="3">Closed with a reason, or folded into one decision, before anyone arrived.</div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const N = 1859, COLS = 86, P = 7, S = 5, cv = document.getElementById('grid'), c = cv.getContext('2d'); c.scale(2, 2);
+  const R = EW.rand(19), COL = ['#E0352B', '#FEC514', '#0B64DD', '#FF7E62', '#02BCB7'], W = [.62, .12, .1, .1, .06];
+  const cells = Array.from({length: N}, (_, i) => { let r = R(), k = 0; while (r > W[k]) { r -= W[k]; k++; } return {i, col: COL[k], born: R() * 1.2, done: 0}; });
+  const order = cells.map((_, i) => i).filter(i => i !== 1300).sort(() => R() - .5);   // cell 1300 is the one that needs a person
+  cells[1300].col = '#F04E98';
+  const big = document.getElementById('big'), closed = document.getElementById('closed'), left = document.getElementById('left');
+  let p = 0, target = 0, t0 = performance.now(), mode = 0;
+  AZ.on((s, dir) => {
+    mode = s; target = s >= 1 ? 1 : 0;
+    if (dir <= 0 || AZ.still) p = target;      // jumps and going back land instantly
+  });
+  EW.loop(() => {
+    const t = (performance.now() - t0) / 1000;
+    p += Math.sign(target - p) * Math.min(Math.abs(target - p), 1 / 60 / 3.2);
+    const done = Math.floor(EW.ease(p) * order.length);
+    big.textContent = Math.round(N * (AZ.still ? 1 : EW.ease((t - .2) / 1.4))).toLocaleString('en-US');
+    closed.textContent = done.toLocaleString('en-US'); left.textContent = (N - done).toLocaleString('en-US');
+    c.clearRect(0, 0, 602, 156);
+    for (const cell of cells){
+      const k = AZ.still ? 1 : AZ.clamp((t - cell.born * .9) / .3, 0, 1); if (!k) continue;
+      const x = (cell.i % COLS) * P, y = Math.floor(cell.i / COLS) * P;
+      const worked = order.indexOf(cell.i) < done && cell.i !== 1300;
+      c.globalAlpha = k * (worked ? 1 : .95);
+      c.fillStyle = worked ? '#DDE3EC' : cell.col;
+      if (cell.i === 1300 && mode >= 1){ const pulse = 1 + .6 * Math.abs(Math.sin(t * 2.4)); c.fillRect(x - pulse, y - pulse, S + pulse * 2, S + pulse * 2); }
+      else c.fillRect(x, y, S, S);
+    }
+    c.globalAlpha = 1;
+  });
+  // order.indexOf in the loop is O(n²); precompute ranks instead
+  const rank = new Int32Array(N).fill(1e9); order.forEach((i, r) => rank[i] = r);
+  order.indexOf = i => rank[i];
+})();
+</script>
+</body>
+</html>

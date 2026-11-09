@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Introducing AlertZero</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  body.ink{background:radial-gradient(900px 600px at 100% 100%,rgba(240,78,152,.30),transparent 60%),radial-gradient(900px 700px at 0% 0%,rgba(11,100,221,.35),transparent 60%),#0E1330}
+  .eyebrow{color:rgba(255,255,255,.6)}
+  .eyebrow b{color:#fff}
+  h1{color:#fff;font-size:76px;letter-spacing:-3px;line-height:.98;margin-top:20px}
+  h1 .p{color:var(--pink)}
+  .sub{color:rgba(255,255,255,.78);font-size:19px;max-width:520px;margin-top:22px}
+  .sub b{color:#fff;font-weight:600}
+  .cards{margin-top:34px;width:540px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .w{background:#fff;padding:14px 16px;position:relative}
+  .w h3{font:600 17px var(--sans);letter-spacing:-.3px;color:var(--blue);display:flex;align-items:center;gap:8px}
+  .w h3 i{width:9px;height:9px;display:inline-block}
+  .w p{font-size:13.5px;color:var(--char);margin-top:4px}
+  #radar{position:absolute;left:640px;top:70px;width:600px;height:580px;z-index:1}
+  .ribbon{position:absolute;right:-64px;top:34px;width:260px;transform:rotate(38deg);background:#fff;color:var(--ink);text-align:center;font:700 16px var(--sans);letter-spacing:.14em;padding:8px 0;z-index:6;box-shadow:0 0 0 6px #101C3F}
+</style>
+</head>
+<body class="ink" data-foot="03 · Introducing AlertZero">
+<div class="ribbon">NEW</div>
+<div class="z">
+  <div class="eyebrow in1">03 · <b>Introducing</b></div>
+  <h1 class="in2">Introducing<br><span class="p">AlertZero.</span></h1>
+  <p class="sub in3"><b>The agentic layer of Elastic Security.</b> Every alert, every rule, every hunt, worked around the clock. A human on the loop.</p>
+  <div class="cards">
+    <div class="w" data-step="1"><h3><i style="background:var(--teal-d)"></i>Triage Watch</h3><p>Every alert, before you see it.</p></div>
+    <div class="w" data-step="2"><h3><i style="background:var(--yellow)"></i>Hunt Watch</h3><p>Hunting that never sleeps.</p></div>
+    <div class="w" data-step="3"><h3><i style="background:var(--blue)"></i>Detection Watch</h3><p>Fix the rule, not the symptom.</p></div>
+    <div class="w" data-step="4"><h3><i style="background:var(--pink)"></i>Forensics Watch</h3><p>Deep research on threats and exploits.</p></div>
+  </div>
+</div>
+<canvas id="radar" width="1200" height="1160"></canvas>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const cv = document.getElementById('radar'), c = cv.getContext('2d'); c.scale(2, 2);
+  const CX = 300, CY = 290, RR = 230;
+  const nodes = [
+    {a: -2.25, name: 'TRIAGE', col: '#02BCB7'}, {a: -.75, name: 'HUNT', col: '#FEC514'},
+    {a: .75, name: 'DETECTION', col: '#4C8DF6'}, {a: 2.25, name: 'FORENSICS', col: '#F04E98'}
+  ].map(n => Object.assign(n, {x: CX + Math.cos(n.a) * RR * .78, y: CY + Math.sin(n.a) * RR * .78, on: 0, hit: -9}));
+  let shown = 0;
+  AZ.on(s => { shown = s; });
+  const t0 = performance.now();
+  EW.loop(() => {
+    const t = (performance.now() - t0) / 1000, sweep = (t * 1.1) % (Math.PI * 2) - Math.PI;
+    c.clearRect(0, 0, 600, 580);
+    const fade = AZ.clamp(t / .8, 0, 1);
+    c.globalAlpha = fade;
+    // rings and cross-hairs
+    c.strokeStyle = 'rgba(255,255,255,.14)'; c.lineWidth = 1;
+    [1, .78, .52, .26].forEach(k => { c.beginPath(); c.arc(CX, CY, RR * k, 0, 6.283); c.stroke(); });
+    c.beginPath(); c.moveTo(CX - RR, CY); c.lineTo(CX + RR, CY); c.moveTo(CX, CY - RR); c.lineTo(CX, CY + RR); c.stroke();
+    // the sweep
+    const g = c.createConicGradient ? c.createConicGradient(sweep - .9, CX, CY) : null;
+    if (g){ g.addColorStop(0, 'rgba(240,78,152,0)'); g.addColorStop(.14, 'rgba(240,78,152,.32)'); g.addColorStop(.1435, 'rgba(240,78,152,0)'); g.addColorStop(1, 'rgba(240,78,152,0)');
+      c.fillStyle = g; c.beginPath(); c.moveTo(CX, CY); c.arc(CX, CY, RR, 0, 6.283); c.fill(); }
+    c.strokeStyle = 'rgba(240,78,152,.9)'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(CX, CY); c.lineTo(CX + Math.cos(sweep) * RR, CY + Math.sin(sweep) * RR); c.stroke();
+    // the four Watches light up as they are introduced; the sweep pings each one
+    nodes.forEach((n, i) => {
+      n.on += ((shown > i ? 1 : 0) - n.on) * .08;
+      const d = Math.abs(((sweep - n.a + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
+      if (d < .05 && t - n.hit > 1) n.hit = t;
+      const k = AZ.clamp((t - n.hit) / 1.2, 0, 1);
+      if (n.on > .05 && k < 1){ c.strokeStyle = n.col; c.globalAlpha = fade * n.on * (1 - k); c.lineWidth = 1.5; c.beginPath(); c.arc(n.x, n.y, 14 + k * 30, 0, 6.283); c.stroke(); c.globalAlpha = fade; }
+      c.fillStyle = n.on > .05 ? n.col : 'rgba(255,255,255,.18)'; c.globalAlpha = fade * (.35 + .65 * n.on);
+      c.fillRect(n.x - 9, n.y - 9, 18, 18); c.globalAlpha = fade;
+      c.font = '600 11px "IBM Plex Mono", monospace'; c.textAlign = n.x < CX ? 'right' : 'left';
+      c.fillStyle = `rgba(255,255,255,${.25 + .7 * n.on})`; c.fillText(n.name + ' WATCH', n.x + (n.x < CX ? -18 : 18), n.y + 4);
+    });
+    // the centre: your SOC, on the loop
+    c.fillStyle = '#fff'; c.fillRect(CX - 34, CY - 16, 68, 32);
+    c.fillStyle = '#1D1E24'; c.font = '600 11px "IBM Plex Mono", monospace'; c.textAlign = 'center'; c.fillText('YOUR SOC', CX, CY + 4);
+    c.globalAlpha = 1;
+  });
+})();
+</script>
+</body>
+</html>

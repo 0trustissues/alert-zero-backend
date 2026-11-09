@@ -2,29 +2,82 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Deck — Cover</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<title>AlertZero Behind the Scenes</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{width:100%;height:100%;overflow:hidden;background:#22242C}
-body{width:1280px;height:720px;overflow:hidden;position:absolute;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;background:#22242C;color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 90px}
-body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(rgba(255,255,255,0.04) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
-.bar{position:fixed;top:0;left:0;width:5px;height:100%;background:#00BFB3}
-@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.f1{opacity:0;animation:up .5s ease forwards .1s}.f2{opacity:0;animation:up .5s ease forwards .3s}.f3{opacity:0;animation:up .5s ease forwards .5s}
-.eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#00BFB3;margin-bottom:22px}
-h1{font-size:4.6rem;font-weight:900;letter-spacing:-.035em;line-height:1.05;margin-bottom:24px}
-.sub{font-size:1.3rem;font-weight:300;color:rgba(255,255,255,.55);max-width:640px;line-height:1.6}
+  h1{font-size:92px;line-height:.96;letter-spacing:-3.8px;margin-top:90px}
+  .sub{font-size:20px;max-width:500px;margin-top:26px}
+  .watches{display:flex;gap:6px;margin-top:30px;flex-wrap:wrap;width:520px}
+  .watches .chip{font-size:10.5px}
+  .watches .chip i{width:7px;height:7px;display:inline-block}
+  #hero{left:560px;top:0;width:720px;height:720px}
 </style>
 </head>
-<body>
-<div class="bar"></div>
-<div class="eyebrow f1">Team · Topic · Date</div>
-<h1 class="f1">A confident title<br>that takes a stance.</h1>
-<p class="sub f2">One sentence that tells the room why the next twenty minutes matter.</p>
+<body data-foot="Elastic Security · AlertZero">
+<div class="z">
+  <div class="eyebrow in1">Elastic Security · <b>The AI SOC transformation</b></div>
+  <h1 class="in2">AlertZero<br><span class="b" style="font-size:.6em;letter-spacing:-2.2px;line-height:1.05;display:inline-block">Behind<br>the Scenes</span></h1>
+  <p class="sub in3">Every alert, every rule, every hunt: worked around the clock before anyone arrives. A human on the loop.</p>
+  <div class="watches in4">
+    <span class="chip"><i style="background:var(--teal-d)"></i>Triage Watch</span>
+    <span class="chip"><i style="background:var(--yellow)"></i>Hunt Watch</span>
+    <span class="chip"><i style="background:var(--blue)"></i>Detection Watch</span>
+    <span class="chip"><i style="background:var(--pink)"></i>Forensics Watch</span>
+  </div>
+</div>
+<svg id="hero" class="iso" viewBox="0 0 720 720"></svg>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
 <script src="/js/fuckslides.js"></script>
 <script>
-(function(){if(window!==window.top)return;const W=1280,H=720;function f(){var s=Math.min(innerWidth/W,innerHeight/H);document.body.style.transform='scale('+s+')';document.body.style.transformOrigin='0 0';document.body.style.left=((innerWidth-W*s)/2)+'px';document.body.style.top=((innerHeight-H*s)/2)+'px'}f();addEventListener('resize',f)})();
+(function(){
+  EW.dots({x: 600, y: 30, w: 680, h: 660, seed: 4, blobs: 6, thr: .5});
+  const svg = document.getElementById('hero');
+  const sc = AZ.iso(svg, {ox: 350, oy: 300, s: .82});
+  const R = EW.rand(5), PZ = 40, G = 40, W = 22;
+  const RAW = [{top: '#FFFFFF', left: '#E0352B', right: '#343741'}, EW.FACES.orange, EW.FACES.yellow, EW.FACES.orange];
+  const DONE = EW.FACES.slate;
+  sc.rect({x: -30, y: -30, w: 330, d: 330, z: 0, delay: .05});
+  sc.box({x: 0, y: 0, w: 270, d: 270, h: PZ, c: 'blue', delay: .1, drop: 110, order: -1000});
+  // the queue: every cube is an item waiting for a person
+  const cubes = [];
+  for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++){
+    const c = RAW[Math.floor(R() * RAW.length)];
+    const b = sc.box({x: 18 + i * G, y: 18 + j * G, w: W, d: W, h: 14 + Math.round(R() * 26), z: PZ, c, stroke: '#1D1E24', delay: .35 + R() * .7, drop: 70, shadow: false});
+    b.raw = true; cubes.push(b);
+  }
+  const paint = (b, F) => { const [l, r, t] = b.g.children; l.setAttribute('fill', F.left); r.setAttribute('fill', F.right); t.setAttribute('fill', F.top);
+    [l, r, t].forEach(p => F === DONE ? p.removeAttribute('stroke') : p.setAttribute('stroke', '#1D1E24')); };
+  // AlertZero: the agentic layer hovering over the platform
+  const A = {x: 96, y: 96, w: 78, z: 168};
+  const hero = sc.box({x: A.x, y: A.y, w: A.w, d: A.w, h: A.w, z: A.z, c: 'pink', delay: 1.05, drop: 90, float: 6, floatSpeed: 1.1, order: 9000});
+  sc.label({at: [A.x + A.w, A.y, A.z + A.w * .6], side: 'r', len: 46, title: 'AlertZero', sub: ['The agentic layer'], raw: true, delay: 1.35});
+  sc.label({at: [18, 258, PZ + 30], side: 'l', len: 56, title: 'The queue', sub: ['Alerts · hunts · rules'], delay: 1.45});
+  sc.label({at: [270, 70, PZ / 2], side: 'r', len: 40, title: 'Elastic Security', sub: ['The platform'], raw: true, delay: 1.55});
+  sc.run();
+  // soft shadow of the hovering cube on the platform
+  const fid = svg.querySelector('filter').id;
+  const shadow = EW.el('polygon', {points: [[A.x + 8, A.y + 8], [A.x + A.w, A.y + 8], [A.x + A.w, A.y + A.w], [A.x + 8, A.y + A.w]].map(([x, y]) => sc.P(x, y, PZ).join(',')).join(' '), fill: 'rgba(240,78,152,.30)', filter: `url(#${fid})`, opacity: 0});
+  sc.body.insertBefore(shadow, sc.body.children[1] || null);
+  // the sweep: a pink sheet that works every item it passes over
+  const sheet = EW.el('polygon', {fill: 'rgba(240,78,152,.10)', stroke: 'rgba(240,78,152,.55)', 'stroke-width': 1, opacity: 0}, sc.top);
+  const strip = EW.el('polygon', {fill: 'rgba(240,78,152,.28)', opacity: 0}, sc.top);
+  let last = 0;
+  EW.loop(t => {
+    shadow.setAttribute('opacity', AZ.clamp((t - 1.1) / .6, 0, 1) * (.8 - .2 * Math.sin((t - 1.75) * 1.1)));
+    if (AZ.still || t < 1.9) return;
+    const ph = ((t - 1.9) / 7) % 1, bx = 4 + 262 * (ph < .5 ? ph * 2 : 2 - ph * 2);
+    const op = Math.min(1, (t - 1.9) * 2);
+    sheet.setAttribute('points', [[bx, 0, PZ], [bx, 270, PZ], [bx, 270, A.z], [bx, 0, A.z]].map(p => sc.P(...p).join(',')).join(' '));
+    strip.setAttribute('points', [[bx - 6, 0, PZ], [bx + 6, 0, PZ], [bx + 6, 270, PZ], [bx - 6, 270, PZ]].map(p => sc.P(...p).join(',')).join(' '));
+    sheet.setAttribute('opacity', op); strip.setAttribute('opacity', op);
+    cubes.forEach(b => { if (b.raw && Math.abs(b.x + W / 2 - bx) < 9){ b.raw = false; paint(b, DONE); } });
+    // new work keeps arriving: a worked item comes back as a fresh alert
+    if (t - last > .3){ last = t; const done = cubes.filter(b => !b.raw); if (done.length > 10){ const b = done[Math.floor(R() * done.length)];
+      b.raw = true; paint(b, RAW[Math.floor(R() * RAW.length)]); b.delay = sc.now(); b.drop = 40; } }
+  });
+})();
 </script>
 </body>
 </html>

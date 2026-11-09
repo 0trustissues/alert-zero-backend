@@ -1,22 +1,19 @@
-# alert-zero-backend
+# AlertZero Behind the Scenes · Elastic Security
 
-A [fslides](https://github.com/fslides/fslides) presentation. Every slide is an HTML file in `slides/` — edit them like code.
+A 27-slide [fslides](https://www.npmjs.com/package/fslides) deck on AlertZero, the agentic layer of Elastic Security: Watches, Workers, hand-offs, proposals, autonomy and a live demo. Every slide is an HTML file in `slides/`; speaker notes are in `notes.json`.
 
-**Watch it:** https://0trustissues.fslides.dev/alert-zero-backend/ — renders straight from this repo; every push to `main` is live within a minute.
-
-## Contribute
+## Run it
 
 ```bash
-git clone https://github.com/0trustissues/alert-zero-backend.git
-cd alert-zero-backend
 npm install
-npm run serve        # opens the deck locally with the full player
+npm run serve        # http://localhost:3007 with the full player
 ```
 
-- **Edit a slide:** change the HTML in `slides/`, the browser live-reloads.
-- **Add a slide:** `npx fslides add-slide my-slide`, then register it in `fslides.config.js`.
-- **Comment on a slide:** press `K` in the player (or the 💬 button) — comments live in this repo's [issues](https://github.com/0trustissues/alert-zero-backend/issues), one per slide.
-- **Speaker notes:** press `N` in the player; notes save to `notes.json`.
-- **Record narration:** `npm run serve`, hit the mic button — audio or camera, saved under `slides/recordings/` and playable on the published deck.
+Press `N` in the player for speaker notes.
 
-Send a PR when you're happy.
+## Static site and PDF
+
+```bash
+npm run build        # static site in _site/, host anywhere (GitHub Pages, any web server)
+npm run pdf          # alertzero-deck.pdf (on macOS you may need PUPPETEER_EXECUTABLE_PATH pointing at Google Chrome)
+```

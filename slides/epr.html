@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Proof: EPR 2026</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:48px;max-width:580px}
+  .sub{font-size:16.5px;max-width:560px}
+  .hero{display:flex;align-items:center;gap:22px;margin-top:22px;width:580px;background:var(--bg);padding:16px 22px}
+  .hero .stat{font:500 74px/1 var(--mono);letter-spacing:-3px}
+  .hero h3{font:600 16px var(--sans)}
+  .hero p{font-size:13px;line-height:1.45;color:var(--char);margin-top:4px}
+  .proof{margin-top:14px;width:580px;display:flex;flex-direction:column;gap:9px}
+  .proof>div{display:grid;grid-template-columns:22px 1fr;gap:8px}
+  .proof .ck{color:var(--teal-d);font-weight:700}
+  .proof h4{font:600 14.5px var(--sans)}
+  .proof p{font-size:12.5px;line-height:1.4;color:var(--grey);margin-top:1px}
+  .badges{position:absolute;left:690px;top:552px;width:518px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;z-index:2}
+  .badges .card{padding:10px 12px;border-color:var(--ink);background:linear-gradient(180deg,#fff 40%,#E6FBF7)}
+  .badges b{display:block;font:600 17px var(--sans);color:var(--blue);letter-spacing:-.3px}
+  .badges span{font-size:11px;line-height:1.35;color:var(--char);display:block;margin-top:3px}
+  #q{position:absolute;left:690px;top:60px;width:518px;height:468px;z-index:2;overflow:visible}
+  #q text{font-family:var(--mono)}
+  .note{position:absolute;left:690px;top:528px;font:400 10px var(--mono);color:var(--grey);letter-spacing:.03em;z-index:2}
+</style>
+</head>
+<body data-foot="02 · Front 1 · Independently tested">
+<div class="z">
+  <div class="eyebrow in1">02 · Front 1 · <b>Independently tested</b></div>
+  <h1 class="in2">The only perfect EPR score <span class="b">in 2026.</span></h1>
+  <p class="sub in3">AV-Comparatives Endpoint Prevention and Response Test 2026, measured by an independent third party.</p>
+  <div class="hero in4"><div class="stat b" data-n="100" data-post="%" data-delay=".6">0%</div><div><h3>Prevention and detection</h3><p>All 50 full attack scenarios blocked, and reported at the first phase of the test.</p></div></div>
+  <div class="proof">
+    <div data-step="3"><span class="ck">✓</span><div><h4>All attacks prevented early</h4><p>Contained at initial access, execution or persistence. Propagation and breach never happened.</p></div></div>
+    <div data-step="3" style="transition-delay:.12s"><span class="ck">✓</span><div><h4>A pattern, not a fluke</h4><p>The only vendor at 100% malware protection across three straight AV-Comparatives tests.</p></div></div>
+    <div data-step="3" style="transition-delay:.24s"><span class="ck">✓</span><div><h4>None of the usual cost</h4><p>One of the lowest total costs of ownership of 14 vendors, with no workflow delays.</p></div></div>
+  </div>
+</div>
+<svg id="q" viewBox="0 0 518 468"></svg>
+<div class="note" data-step="1">Illustrative, after the AV-Comparatives CyberRisk Quadrant 2026 (14 vendors)</div>
+<div class="badges">
+  <div class="card" data-step="4"><b>Only vendor</b><span>100% active and passive response, AV-Comparatives EPR 2026</span></div>
+  <div class="card" data-step="4" style="transition-delay:.12s"><b>Leader</b><span>The Forrester Wave: Security Analytics Platforms, Q2 2025</span></div>
+  <div class="card" data-step="4" style="transition-delay:.24s"><b>Leader</b><span>IDC MarketScape: Worldwide SIEM, 2026</span></div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const svg = document.getElementById('q'), el = (t, a, p) => EW.el(t, a, p || svg);
+  const X0 = 40, Y0 = 20, W = 440, H = 400;
+  const frame = el('g', {opacity: 0});
+  // not-certified zone: an L along the left and bottom
+  el('path', {d: `M${X0},${Y0}H${X0 + 90}V${Y0 + H - 110}Q${X0 + 90},${Y0 + H - 90} ${X0 + 110},${Y0 + H - 90}H${X0 + W}V${Y0 + H}H${X0}Z`, fill: '#EEF1F5'}, frame);
+  for (let i = 1; i < 8; i++){ el('line', {x1: X0 + i * W / 8, y1: Y0, x2: X0 + i * W / 8, y2: Y0 + H, stroke: '#E3E8EF'}, frame); el('line', {x1: X0, y1: Y0 + i * H / 8, x2: X0 + W, y2: Y0 + i * H / 8, stroke: '#E3E8EF'}, frame); }
+  el('rect', {x: X0, y: Y0, width: W, height: H, fill: 'none', stroke: '#1D1E24'}, frame);
+  const tx = (s, x, y, a, o) => { const e = el('text', Object.assign({x, y, 'font-size': 10.5, 'font-weight': 600, fill: '#343741', 'letter-spacing': '.06em', 'text-anchor': a || 'start'}, o || {}), frame); e.textContent = s; return e; };
+  tx('CERTIFIED LEADERS', X0 + W - 14, Y0 + H - 110, 'end', {fill: '#69707D'});
+  tx('NOT CERTIFIED', X0 + W - 14, Y0 + H - 14, 'end', {fill: '#98A2B3'});
+  tx('LOWER 5-YEAR OPERATIONAL IMPACT  →', X0 + W, Y0 + H + 26, 'end');
+  tx('PREVENTION / RESPONSE CAPABILITY  →', 0, 0, 'start', {transform: `translate(${X0 - 14},${Y0 + H}) rotate(-90)`});
+  // the other 13 vendors, unlabeled
+  const R = EW.rand(6), others = [[.78, .1], [.83, .14], [.7, .2], [.75, .24], [.62, .3], [.66, .37], [.47, .42], [.55, .5], [.44, .58], [.1, .4], [.18, .78], [.3, .62], [.06, .86]];
+  const dots = others.map(([x, y], i) => { const c = el('circle', {cx: X0 + x * W, cy: Y0 + y * H, r: 6, fill: '#B5BFCE', stroke: '#fff', 'stroke-width': 1.5, opacity: 0}); c.style.transition = `opacity .4s ${.25 + i * .05}s`; return c; });
+  // Elastic: top right
+  const ex = X0 + W - 18, ey = Y0 + 16;
+  const eg = el('g', {opacity: 0});
+  const ring = el('circle', {cx: ex, cy: ey, r: 9, fill: 'none', stroke: '#0B64DD', 'stroke-width': 1.5}, eg);
+  el('circle', {cx: ex, cy: ey, r: 8, fill: '#0B64DD', stroke: '#fff', 'stroke-width': 2}, eg);
+  el('line', {x1: ex - 12, y1: ey + 6, x2: ex - 70, y2: ey + 40, stroke: '#1D1E24'}, eg);
+  const lt = el('text', {x: ex - 74, y: ey + 50, 'text-anchor': 'end', 'font-size': 12, 'font-weight': 600, fill: '#1D1E24', 'letter-spacing': '.04em'}, eg); lt.textContent = 'ELASTIC';
+  const ls = el('text', {x: ex - 74, y: ey + 65, 'text-anchor': 'end', 'font-size': 10.5, fill: '#343741'}, eg); ls.textContent = 'highest protection, lowest impact';
+  frame.style.transition = 'opacity .5s'; eg.style.transition = 'opacity .4s';
+  let s0 = 0;
+  AZ.on(s => {
+    s0 = s;
+    frame.setAttribute('opacity', s >= 1 ? 1 : 0);
+    dots.forEach(d => d.setAttribute('opacity', s >= 1 ? 1 : 0));
+    eg.setAttribute('opacity', s >= 2 ? 1 : 0);
+  });
+  EW.loop(t => { if (s0 < 2) return; const k = (t % 2.2) / 2.2; ring.setAttribute('r', 9 + k * 22); ring.setAttribute('opacity', (1 - k) * .8); });
+})();
+</script>
+</body>
+</html>

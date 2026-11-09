@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Prevention: five layers</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:46px;max-width:620px}
+  .sub{font-size:16.5px;max-width:560px}
+  .rows{margin-top:22px;width:560px;display:flex;flex-direction:column;gap:7px}
+  .row{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:center;padding:9px 12px;border:1px solid var(--line);background:#fff}
+  .row .n{width:40px;height:40px;background:var(--blue);color:#fff;font:600 14px var(--mono);display:flex;align-items:center;justify-content:center}
+  .row h3{font:600 15.5px/1.2 var(--sans);letter-spacing:-.2px}
+  .row p{font-size:12.5px;line-height:1.4;color:var(--grey);margin-top:2px}
+  .foot{margin-top:14px;width:560px;display:flex;align-items:center;gap:8px}
+  .foot .chip b{color:var(--teal-d);font-weight:700}
+  .foot .open{margin-left:auto;font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+  .foot .open i{font-style:normal;color:var(--teal-d)}
+  #iso{left:640px;top:30px;width:640px;height:660px}
+</style>
+</head>
+<body data-foot="02 · The platform · Prevention">
+<div class="z">
+  <div class="eyebrow in1">02 · Front 1 · <b>Prevention</b></div>
+  <h1 class="in2">Five layers. <span class="b">Each catches what the last misses.</span></h1>
+  <p class="sub in3">Next-gen malware, living-off-the-land, zero-days and ransomware all have to execute to do damage. Stop it before it becomes a ticket.</p>
+  <div class="rows">
+    <div class="row" data-step="1" data-fx="left"><span class="n">01</span><div><h3>Malware prevention</h3><p>ML scores every binary at write and execution: known and never-seen-before.</p></div></div>
+    <div class="row" data-step="2" data-fx="left"><span class="n">02</span><div><h3>Behavioural prevention</h3><p>EQL endpoint rules catch LOLBin chains and tradecraft that leave no malware file.</p></div></div>
+    <div class="row" data-step="3" data-fx="left"><span class="n">03</span><div><h3>Memory threat protection</h3><p>Stops shellcode injection, reflective DLL loading and in-memory execution chains.</p></div></div>
+    <div class="row" data-step="4" data-fx="left"><span class="n">04</span><div><h3>Ransomware protection</h3><p>Canary files, MBR protection and behavioural patterns interrupt encryption first.</p></div></div>
+    <div class="row" data-step="5" data-fx="left"><span class="n">05</span><div><h3>Attack surface reduction</h3><p>Credential protection and exploit mitigations close the door on escalation.</p></div></div>
+  </div>
+  <div class="foot" data-step="6"><span class="chip"><b>✓</b> Windows</span><span class="chip"><b>✓</b> macOS</span><span class="chip"><b>✓</b> Linux</span><span class="chip"><b>✓</b> K8s</span><span class="open">Open protections · <i>No black boxes</i></span></div>
+</div>
+<svg id="iso" class="iso" viewBox="0 0 640 660"></svg>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  EW.dots({x: 700, y: 60, w: 580, h: 600, seed: 14, blobs: 5, thr: .55});
+  const svg = document.getElementById('iso');
+  const sc = AZ.iso(svg, {ox: 300, oy: 330, s: .8});
+  const S = 220, TH = 14, Z0 = 70, GAP = 50, Zof = i => Z0 + (4 - i) * GAP;
+  const names = ['Malware', 'Behavioural', 'Memory', 'Ransomware', 'Attack surface'];
+  sc.rect({x: -20, y: -20, w: S + 40, d: S + 40, z: 0, delay: .05});
+  const host = sc.box({x: 70, y: 70, w: 80, d: 80, h: 44, z: 0, c: 'white', delay: .2, drop: 40});
+  sc.label({at: [70, 150, 22], side: 'l', len: 110, title: 'Your endpoint', sub: 'What we protect', raw: true, delay: .6});
+  const slabs = [], labels = [];
+  names.forEach((n, i) => {
+    slabs.push(sc.box({x: 0, y: 0, w: S, d: S, h: TH, z: Zof(i), c: {top: 'rgba(255,255,255,.62)', left: '#0B64DD', right: '#0A4FB0'}, delay: 1e9, drop: 60, order: 1000 + (4 - i) * 10}));
+    labels.push(sc.label({at: [S, S / 2, Zof(i) + TH / 2], side: 'r', len: 34, title: `0${i + 1} ${n}`, raw: true, delay: 1e9}));
+  });
+  sc.run();
+  // threats rain down; each layer stops its own kind, anything it misses reaches the endpoint
+  const g = EW.el('g', {}, sc.top), R = EW.rand(9), RED = ['#FFFFFF', '#E0352B', '#343741'];
+  const cube = () => { const e = EW.el('g', {}, g); for (let k = 0; k < 3; k++) EW.el('polygon', {fill: RED[k], stroke: '#1D1E24', 'stroke-width': .8}, e); return e; };
+  const drops = Array.from({length: 5}, (_, i) => ({g: cube(), t0: i * .9, kind: i}));
+  const rings = Array.from({length: 5}, () => EW.el('ellipse', {fill: 'none', 'stroke-width': 1.4, opacity: 0}, g));
+  let layers = 0, hostHit = 0;
+  AZ.on(s => { layers = Math.min(5, s); slabs.forEach((b, i) => AZ.reveal(sc, [b, labels[i]], i < layers, {gap: .25})); });
+  const hostLeft = host.g.children[0];
+  EW.loop(t => {
+    hostLeft.setAttribute('fill', t - hostHit < .5 ? '#E0352B' : '#F5F7FA');
+    if (AZ.still) { drops.forEach(d => d.g.setAttribute('opacity', 0)); return; }
+    drops.forEach((d, i) => {
+      const P = 4.5, k = ((t - d.t0) % P + P) % P;
+      if (k < .05){ d.kind = Math.floor(R() * 5); d.x = 30 + R() * 150; d.y = 30 + R() * 150; d.done = false; }
+      if (d.x === undefined) return;
+      const stopZ = d.kind < layers ? Zof(d.kind) + TH : (d.x > 60 && d.x < 150 && d.y > 60 && d.y < 150 ? 44 : 0);
+      const z = Math.max(stopZ, 420 - 150 * k * k);
+      const landed = z <= stopZ + .01, w = 12, x = d.x, y = d.y;
+      const pts = [[[x, y + w, z + w], [x + w, y + w, z + w], [x + w, y + w, z], [x, y + w, z]], [[x + w, y, z + w], [x + w, y + w, z + w], [x + w, y + w, z], [x + w, y, z]], [[x, y, z + w], [x + w, y, z + w], [x + w, y + w, z + w], [x, y + w, z + w]]];
+      [...d.g.children].forEach((p, j) => p.setAttribute('points', pts[j].map(q => sc.P(...q).join(',')).join(' ')));
+      if (landed && !d.done){ d.done = t; if (d.kind >= layers) hostHit = t; const [cx, cy] = sc.P(x + w / 2, y + w / 2, stopZ); Object.assign(rings[i], {cx, cy}); rings[i].setAttribute('cx', cx); rings[i].setAttribute('cy', cy); rings[i].setAttribute('stroke', d.kind < layers ? '#0B64DD' : '#E0352B'); }
+      const since = d.done ? t - d.done : 0;
+      d.g.setAttribute('opacity', d.done ? Math.max(0, 1 - since / .35) : Math.min(1, k * 4));
+      const rk = AZ.clamp(since / .7, 0, 1); rings[i].setAttribute('rx', 8 + rk * 30); rings[i].setAttribute('ry', (8 + rk * 30) * .58); rings[i].setAttribute('opacity', d.done ? (1 - rk) * .9 : 0);
+    });
+  });
+})();
+</script>
+</body>
+</html>

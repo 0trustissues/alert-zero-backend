@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>One night, end to end</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:48px}
+  .sub{font-size:16.5px;max-width:760px}
+  .clock{position:absolute;right:72px;top:62px;text-align:right;z-index:3}
+  .clock b{display:block;font:500 62px/1 var(--mono);letter-spacing:-2px;color:var(--ink)}
+  .clock span{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--grey)}
+  #tl{position:absolute;left:0;top:0;width:1280px;height:720px;z-index:2;overflow:visible}
+  #tl text{font:500 10.5px var(--mono);letter-spacing:.04em;fill:var(--grey)}
+  .ev{position:absolute;width:196px;z-index:3;background:#fff;border:1px solid var(--line);padding:9px 11px}
+  .ev .tag{font-size:9.5px;display:flex;justify-content:space-between;align-items:center}
+  .ev .tag i{font-style:normal;font-weight:600}
+  .ev h4{font:600 13px/1.25 var(--sans);margin-top:4px}
+  .ev p{font-size:11.5px;line-height:1.4;color:var(--grey);margin-top:3px}
+  .ev.you{border:1.5px solid var(--ink);box-shadow:6px 6px 0 var(--blue)}
+  .ev .w{display:inline-block;width:8px;height:8px;margin-right:6px}
+</style>
+</head>
+<body data-foot="05 · See it run · One night">
+<div class="z">
+  <div class="eyebrow in1">05 · See it run · <b>An illustrative shift</b></div>
+  <h1 class="in2">One night, <span class="b">end to end.</span></h1>
+  <p class="sub in3">Triage Watch set to supervised, every other Watch on manual. Nobody is in the SOC.</p>
+</div>
+<div class="clock in3"><b id="clk">22:00</b><span id="clkl">Shift starts · SOC empty</span></div>
+<svg id="tl" viewBox="0 0 1280 720"></svg>
+<div id="evs"></div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const X0 = 112, X1 = 1168, AY = 412, H = 10, xAt = h => X0 + (X1 - X0) * h / H;
+  const svg = document.getElementById('tl');
+  const grad = EW.el('linearGradient', {id: 'sky', x1: 0, x2: 1, y1: 0, y2: 0}, EW.el('defs', {}, svg));
+  [[0, '#1D1E24'], [.55, '#0B64DD'], [1, '#FEC514']].forEach(([o, c]) => EW.el('stop', {offset: o, 'stop-color': c}, grad));
+  EW.el('rect', {x: X0, y: AY - 2, width: X1 - X0, height: 4, fill: '#DDE3EC'}, svg);
+  const prog = EW.el('rect', {x: X0, y: AY - 2, width: 0, height: 4, fill: 'url(#sky)'}, svg);
+  for (let h = 0; h <= H; h++){ const x = xAt(h); EW.el('line', {x1: x, y1: AY + 6, x2: x, y2: AY + (h % 2 ? 10 : 14), stroke: '#98A2B3'}, svg);
+    if (h % 2 === 0){ const t = EW.el('text', {x, y: AY + 28, 'text-anchor': 'middle'}, svg); t.textContent = String((22 + h) % 24).padStart(2, '0') + ':00'; } }
+  const head = EW.el('g', {}, svg);
+  EW.el('line', {x1: 0, y1: AY - 16, x2: 0, y2: AY + 16, stroke: '#1D1E24', 'stroke-width': 1.5}, head);
+  EW.el('circle', {cx: 0, cy: AY, r: 5, fill: '#fff', stroke: '#1D1E24', 'stroke-width': 1.5}, head);
+  // [hours after 22:00, up?, watch colour, watch, title, detail, clock caption]
+  const E = [
+    [.25, 1, '#02BCB7', 'Triage', '412 alerts get a verdict', '380 confident false positives closed on their own (supervised).', 'Alert Triage sweep'],
+    [2, 0, '#FEC514', 'Hunt', 'axios report hunted', '1 real hit on build-runner-07. The isolate proposal waits.', 'Continuous Hunt'],
+    [3, 1, '#0B64DD', 'Detection', 'Coverage gap closed', 'A new ES|QL rule is drafted, previewed and created disabled.', 'Rule Coverage'],
+    [4, 0, '#0B64DD', 'Detection', 'Scanner noise tuned', 'An exception is backtested with a rule preview, then proposed.', 'Rule Tuning'],
+    [6, 1, '#02BCB7', 'Triage', '1 attack is real', 'Attack Discovery hands off to forensics, auto-approved.', 'Attack Discovery'],
+    [6.02, 0, '#F04E98', 'Forensics', 'Host timeline rebuilt', 'IoCs attached. Isolate ws-fin-114 waits for a person.', 'Endpoint Analysis'],
+    [10, 1, '#1D1E24', 'You', 'Coffee. Six decisions.', 'Each one with evidence, the query and a reason. Nothing else to read.', 'Analyst arrives']
+  ];
+  const box = document.getElementById('evs');
+  E.forEach(([h, up, col, w, t, d], i) => {
+    const x = xAt(h), left = Math.max(72, Math.min(1208 - 196, x - 98)), you = w === 'You';
+    const el = document.createElement('div'); el.className = 'ev' + (you ? ' you' : ''); el.dataset.step = i + 1; el.dataset.fx = 'pop';
+    el.style.left = left + 'px'; el.style.top = (up ? 232 : 470) + 'px';
+    if (i === 4) el.style.left = (left - 70) + 'px'; if (i === 5) el.style.left = (left + 70) + 'px';
+    el.innerHTML = `<div class="tag"><span><i class="w" style="background:${col}"></i>${w}</span><i>${String(Math.floor((22 + h) % 24)).padStart(2, '0')}:${String(Math.round((h % 1) * 60)).padStart(2, '0')}</i></div><h4>${t}</h4><p>${d}</p>`;
+    box.appendChild(el);
+    const ln = EW.el('line', {x1: x, y1: up ? 352 : AY + 6, x2: x, y2: up ? AY - 6 : 470, stroke: col, 'stroke-width': 1.2, 'stroke-dasharray': '2 3', opacity: 0}, svg);
+    const dot = EW.el('rect', {x: x - 5, y: AY - 5, width: 10, height: 10, fill: col, opacity: 0}, svg);
+    ln.style.transition = dot.style.transition = 'opacity .4s .3s';
+    E[i].push(ln, dot);
+  });
+  const clk = document.getElementById('clk'), clkl = document.getElementById('clkl');
+  let cur = 0, target = 0;
+  AZ.on((s, dir) => {
+    target = s === 0 ? 0 : E[s - 1][0];
+    if (dir <= 0 || AZ.still) cur = target;
+    E.forEach((e, i) => { e[7].setAttribute('opacity', s > i ? 1 : 0); e[8].setAttribute('opacity', s > i ? 1 : 0); });
+    clkl.textContent = s === 0 ? 'Shift starts · SOC empty' : E[s - 1][6];
+  });
+  EW.loop(() => {
+    cur += (target - cur) * .06; if (Math.abs(target - cur) < .002) cur = target;
+    const x = xAt(cur); head.setAttribute('transform', `translate(${x},0)`); prog.setAttribute('width', x - X0);
+    const mins = Math.round(cur * 60), hh = (22 + Math.floor(mins / 60)) % 24, mm = mins % 60;
+    clk.textContent = String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
+  });
+})();
+</script>
+</body>
+</html>

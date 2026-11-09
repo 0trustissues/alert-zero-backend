@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Live demo</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:64px;letter-spacing:-2.4px;display:flex;align-items:center;gap:22px}
+  .live{display:inline-flex;align-items:center;gap:8px;font:600 12px var(--mono);letter-spacing:.1em;color:#E0352B;border:1.5px solid #E0352B;padding:5px 10px;margin-top:10px}
+  .live i{width:9px;height:9px;border-radius:50%;background:#E0352B;position:relative}
+  .live i::after{content:'';position:absolute;inset:0;border-radius:50%;background:#E0352B;animation:az-pulse 1.6s ease-out infinite}
+  .sub{font-size:17px;max-width:520px}
+  .cards{margin-top:24px;width:540px;display:flex;flex-direction:column;gap:12px}
+  .cd{display:grid;grid-template-columns:52px 1fr;gap:14px;padding:14px 16px;border:1px solid var(--line);background:#fff}
+  .cd b{font:500 34px/1 var(--mono);color:var(--blue)}
+  .cd h3{font:600 17px var(--sans);letter-spacing:-.3px}
+  .cd p{font-size:13.5px;line-height:1.45;color:var(--char);margin-top:4px}
+  .win{left:660px;top:96px;width:548px;height:430px}
+  .qh{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px dashed var(--line)}
+  .qh h3{font:600 16px var(--sans)}
+  .qh .v{font-size:10px}
+  .q{display:grid;grid-template-columns:10px 1fr auto;gap:12px;align-items:center;padding:0 16px;height:56px;border-bottom:1px solid var(--line);font-size:13px}
+  .q i{width:8px;height:8px}
+  .q small{display:block;font:400 10.5px var(--mono);color:var(--grey);margin-top:2px}
+  .q .btn{font-size:11px;padding:4px 10px}
+  .q.done{background:#E6FBF7}
+  .q.done .btn{border-color:var(--teal-d);color:#027A76;background:#fff}
+  .chips{position:absolute;left:72px;right:72px;top:584px;display:grid;grid-template-columns:repeat(6,1fr);gap:14px;z-index:2}
+  .ch{height:42px;border:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center;font:600 14px var(--sans);background:#fff;position:relative;transition:background .3s,color .3s}
+  .ch.cur{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .ch small{position:absolute;left:8px;top:4px;font:500 9px var(--mono);color:inherit;opacity:.6}
+</style>
+</head>
+<body data-foot="05 · See it run · Live demo">
+<div class="z">
+  <div class="eyebrow in1">05 · See it run</div>
+  <h1 class="in2">AlertZero, <span class="b">running.</span></h1>
+  <div class="live in2"><i></i>LIVE DEMO</div>
+  <div class="cards">
+    <div class="cd" data-step="1"><b>1</b><div><h3>The queue is decisions</h3><p>Overnight, every alert triaged with reasoning. Six rows need a person.</p></div></div>
+    <div class="cd" data-step="2"><b>2</b><div><h3>Approve, and Defend acts</h3><p>One yes isolates the host. One yes tunes the rule that made the noise.</p></div></div>
+    <div class="cd" data-step="3"><b>3</b><div><h3>Hunt, and the honest no</h3><p>Zero matches recorded as zero. The gap it finds becomes a rule proposal.</p></div></div>
+  </div>
+</div>
+<div class="win in3">
+  <div class="bar"><i></i><i></i><i></i><span>AlertZero · Decisions</span></div>
+  <div class="qh"><h3>Waiting for you</h3><span class="v ask" id="cnt">6 proposals</span></div>
+  <div id="qs"></div>
+</div>
+<div class="chips" data-step="4" id="chips"></div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const Q = [['#F04E98', 'Isolate ws-fin-114', 'Forensics · true positive · IoCs attached'], ['#FEC514', 'Isolate build-runner-07', 'Hunt · axios report · 1 real hit'],
+    ['#0B64DD', 'Add exception: scanner range', 'Detection · backtested'], ['#0B64DD', 'Create ES|QL rule, disabled', 'Detection · coverage gap'],
+    ['#02BCB7', 'Hand off attack 05 to forensics', 'Triage · inconclusive'], ['#1D1E24', 'Close Investigation A-0029', 'Forensics · always asks']];
+  const qs = document.getElementById('qs');
+  qs.innerHTML = Q.map(([c, t, s], i) => `<div class="q" data-i="${i}"><i style="background:${c}"></i><div>${t}<small>${s}</small></div><span class="btn">Review</span></div>`).join('');
+  const rows = [...qs.children], cnt = document.getElementById('cnt');
+  // step 2: the two approvals from the talk track go through
+  AZ.on(s => { rows.forEach((r, i) => { const d = s >= 2 && i < 2 || s >= 3 && i === 3; r.classList.toggle('done', d); r.querySelector('.btn').textContent = d ? 'Approved' : 'Review'; });
+    cnt.textContent = (6 - rows.filter(r => r.classList.contains('done')).length) + ' proposals'; });
+  const names = ['Queue', 'Investigate', 'Contain', 'Tune', 'Hunt', 'Incident'], chips = document.getElementById('chips');
+  chips.innerHTML = names.map((n, i) => `<div class="ch"><small>0${i + 1}</small>${n}</div>`).join('');
+  const cs = [...chips.children];
+  EW.loop(t => { const k = Math.floor(t / 1.2) % cs.length; cs.forEach((c, i) => c.classList.toggle('cur', i === k)); });
+})();
+</script>
+</body>
+</html>

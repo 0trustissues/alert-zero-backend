@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Two fronts</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  .sub{max-width:1000px}
+  #stream{position:absolute;left:72px;top:192px;width:1136px;height:168px;z-index:2}
+  .cards{position:absolute;left:72px;right:72px;top:384px;height:252px;display:grid;grid-template-columns:1fr 1fr;gap:24px;z-index:2}
+  .card{padding:24px 28px;display:flex;flex-direction:column}
+  .card.f1{background:var(--bg);border-color:var(--bg)}
+  .card.f2{border:1.5px solid var(--blue);box-shadow:8px 8px 0 var(--blue)}
+  .card .kick{color:var(--grey)}
+  .card.f2 .kick{color:var(--blue)}
+  .card h3{font:600 26px/1.1 var(--sans);letter-spacing:-.6px;margin-top:10px}
+  .card .ru{width:40px;height:3px;background:var(--teal);margin-top:12px}
+  .card .lead{font-size:15px;line-height:1.45;color:var(--char);margin-top:14px}
+  .card .lead b{color:var(--ink)}
+  .card ul{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:6px}
+  .card li{font-size:13.5px;line-height:1.4;color:var(--char);padding-left:16px;position:relative}
+  .card li::before{content:'';position:absolute;left:0;top:7px;width:6px;height:6px;background:var(--blue)}
+</style>
+</head>
+<body data-foot="02 · The platform · Two fronts">
+<div class="z">
+  <div class="eyebrow in1">02 · The platform · <b>Elastic Security's answer</b></div>
+  <h1 class="in2">Block the known. <span class="b">Hunt the unknown.</span></h1>
+  <p class="sub in3">Two ways Elastic Security answers those bottlenecks. Today goes deep on the second one.</p>
+</div>
+<canvas id="stream" width="2272" height="336"></canvas>
+<div class="cards">
+  <div class="card f1" data-step="1">
+    <div class="kick">Front 1 · Prevention</div>
+    <h3>Block the known</h3><div class="ru"></div>
+    <p class="lead">Malicious behaviour is denied before it runs: at machine speed, across every endpoint.</p>
+    <ul><li>Behavioural protections stop decisive actions at execution</li><li>One prevention architecture for Windows, macOS and Linux</li><li>Containment before the attacker gets to act</li></ul>
+  </div>
+  <div class="card f2" data-step="2">
+    <div class="kick">Front 2 · Hunting · The focus today</div>
+    <h3>Hunt the unknown</h3><div class="ru"></div>
+    <p class="lead"><b>Continuous threat hunting, powered by AlertZero,</b> turns raw research into validated detection.</p>
+    <ul><li>Reads threat research and pulls out the tradecraft</li><li>Runs grounded, validated queries against your environment</li><li>Correlates evidence into campaigns, or gives an honest no</li><li>Proposes new detection rules for a human to review</li></ul>
+  </div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const cv = document.getElementById('stream'), c = cv.getContext('2d'); c.scale(2, 2);
+  const W = 1136, H = 168, WALL = 430, NET = 790, Q = 940, R = EW.rand(3);
+  let wall = 0, net = 0, wallT = 0, netT = 0, items = [], fx = [], spawn = 0, queue = 0, found = 0, last = performance.now();
+  AZ.on(s => { wallT = s >= 1 ? 1 : 0; netT = s >= 2 ? 1 : 0; if (AZ.still){ wall = wallT; net = netT; } });
+  const mono = (t, x, y, col, al) => { c.font = '600 10.5px "IBM Plex Mono", monospace'; c.fillStyle = col; c.textAlign = al || 'left'; c.fillText(t, x, y); };
+  EW.loop(() => {
+    const now = performance.now(), dt = Math.min(.05, (now - last) / 1000); last = now;
+    wall += (wallT - wall) * .08; net += (netT - net) * .08;
+    spawn -= dt; if (spawn <= 0){ spawn = .28 + R() * .2; items.push({x: -10, y: 44 + R() * 104, known: R() < .62, v: 120 + R() * 40, caught: 0}); }
+    queue = Math.max(0, queue - dt * 1.6);
+    c.clearRect(0, 0, W, H);
+    // lane
+    c.strokeStyle = '#D3DAE6'; c.setLineDash([2, 4]); c.beginPath(); c.moveTo(0, 30.5); c.lineTo(W, 30.5); c.moveTo(0, 158.5); c.lineTo(W, 158.5); c.stroke(); c.setLineDash([]);
+    mono('THREATS IN', 0, 18, '#69707D');
+    // wall: Elastic Defend
+    c.globalAlpha = .15 + .85 * wall; c.fillStyle = '#0B64DD'; c.fillRect(WALL - 3, 36, 6, 118); c.globalAlpha = 1;
+    mono('ELASTIC DEFEND', WALL, 18, wall > .5 ? '#0B64DD' : '#98A2B3', 'center');
+    // net: continuous hunt, a sweeping pink band
+    const sy = 36 + (Math.sin(now / 520) * .5 + .5) * 100;
+    c.globalAlpha = .15 + .85 * net; c.strokeStyle = '#F04E98'; c.setLineDash([3, 3]); c.beginPath(); c.moveTo(NET + .5, 36); c.lineTo(NET + .5, 154); c.stroke(); c.setLineDash([]);
+    c.globalAlpha = net * .25; c.fillStyle = '#F04E98'; c.fillRect(NET - 24, sy - 9, 48, 18); c.globalAlpha = 1;
+    mono('CONTINUOUS HUNT', NET, 18, net > .5 ? '#F04E98' : '#98A2B3', 'center');
+    mono('YOUR QUEUE', W, 18, '#69707D', 'right');
+    for (const it of items){
+      const before = it.x; it.x += it.v * dt * (it.caught ? .25 : 1);
+      if (it.known && wall > .5 && before < WALL - 8 && it.x >= WALL - 8){ it.dead = 1; fx.push({x: WALL - 8, y: it.y, t: now, col: '#E0352B'}); continue; }
+      if (!it.known && net > .5 && !it.caught && before < NET - 6 && it.x >= NET - 6){ it.caught = now; found++; fx.push({x: NET, y: it.y, t: now, col: '#F04E98'}); }
+      if (it.caught && now - it.caught > 700){ it.dead = 1; continue; }
+      if (it.x > Q){ it.dead = 1; queue = Math.min(64, queue + 1); continue; }
+      const s = 11;
+      if (it.caught){ c.fillStyle = '#F04E98'; c.globalAlpha = 1 - (now - it.caught) / 700; c.fillRect(it.x - s / 2, it.y - s / 2, s, s); c.globalAlpha = 1; }
+      else if (it.known){ c.fillStyle = '#E0352B'; c.fillRect(it.x - s / 2, it.y - s / 2, s, s); }
+      else { c.strokeStyle = '#1D1E24'; c.setLineDash([2, 2]); c.strokeRect(it.x - s / 2 + .5, it.y - s / 2 + .5, s - 1, s - 1); c.setLineDash([]); }
+    }
+    items = items.filter(i => !i.dead);
+    fx = fx.filter(f => now - f.t < 600);
+    for (const f of fx){ const k = (now - f.t) / 600; c.strokeStyle = f.col; c.globalAlpha = 1 - k; c.lineWidth = 1.4; c.beginPath(); c.arc(f.x, f.y, 6 + k * 18, 0, 6.283); c.stroke(); c.lineWidth = 1; c.globalAlpha = 1; }
+    // the queue: a heap that grows while threats get through, and drains when they don't
+    const n = Math.round(queue);
+    for (let i = 0; i < n; i++){ const col = i % 12, row = Math.floor(i / 12); c.fillStyle = '#B5BFCE'; c.fillRect(W - 12 - col * 15, 146 - row * 15, 11, 11); }
+    if (found) mono(`FINDINGS ${found}`, NET, 172 - 4, '#F04E98', 'center');
+  });
+})();
+</script>
+</body>
+</html>

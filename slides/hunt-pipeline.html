@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>From research to detection</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:46px}
+  .sub{font-size:16.5px}
+  .stages{position:absolute;left:72px;right:72px;top:198px;display:grid;grid-template-columns:repeat(6,1fr);gap:18px;z-index:3}
+  .sg{background:#fff;border:1px solid var(--line);padding:10px 12px;height:78px;transition:border-color .4s,box-shadow .4s}
+  .sg .tag{font-size:9.5px;color:var(--grey)}
+  .sg h3{font:600 14.5px var(--sans);letter-spacing:-.2px;margin-top:4px}
+  .sg p{font:400 10.5px/1.35 var(--mono);color:var(--char);margin-top:3px}
+  .sg.agent{border:1.5px solid var(--pink)}
+  .sg.gate{box-shadow:4px 4px 0 var(--yellow)}
+  .sg.hl{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-l)}
+  #wire{position:absolute;left:0;top:0;width:1280px;height:720px;z-index:2;overflow:visible}
+  .bot{position:absolute;left:72px;right:72px;top:316px;height:318px;display:grid;grid-template-columns:340px 1fr 300px;gap:22px;z-index:3}
+  .doc{border:1px solid var(--ink);background:#fff;padding:14px 16px;position:relative}
+  .doc .tag{font-size:10px;color:var(--grey);display:flex;justify-content:space-between}
+  .doc h3{font:600 15px/1.25 var(--sans);margin-top:6px}
+  .doc p{font-size:12px;line-height:1.55;color:var(--char);margin-top:8px}
+  .doc mark{background:none;color:inherit;transition:background .5s}
+  body:not([data-at="0"]) .doc mark.i{background:#FFE8A3}
+  body:not([data-at="0"]) .doc mark.t{background:#FCD3E6}
+  .ext{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+  .ext .chip{font-size:9.5px;padding:2px 6px}
+  .code{background:#101218;color:#E6E9EF;padding:0;position:relative}
+  .code .bar{height:30px;display:flex;align-items:center;gap:7px;padding:0 14px;border-bottom:1px solid #2A2D36;font:500 10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#98A2B3}
+  .code .bar i{width:8px;height:8px;border:1px solid #69707D;border-radius:50%}
+  .code pre{font:400 12.5px/1.65 var(--mono);padding:14px 16px;white-space:pre-wrap;min-height:150px}
+  .code pre .k{color:#48EFCF}
+  .code .ok{position:absolute;left:16px;bottom:14px;display:flex;gap:8px}
+  .code .ok span{font:600 10px var(--mono);letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border:1px solid}
+  .t1{position:absolute;right:16px;top:44px;font:600 10px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:#98A2B3;text-align:right}
+  .t1 b{display:block;color:#fff;font-size:13px;margin-top:2px}
+  .out{display:flex;flex-direction:column;gap:10px}
+  .hit{border:1px solid var(--ink);background:#fff;padding:12px 14px;box-shadow:6px 6px 0 var(--blue)}
+  .hit .tag{font-size:10px;color:var(--blue)}
+  .hit h3{font:600 15px var(--sans);margin-top:4px}
+  .hit p{font:400 10.5px/1.45 var(--mono);color:var(--char);margin-top:4px}
+  .pp{padding:10px 12px}
+  .pp .tag{font-size:9.5px;display:flex;justify-content:space-between;align-items:center}
+  .pp h4{font:600 13.5px var(--sans);margin-top:4px}
+</style>
+</head>
+<body data-foot="03 · AlertZero · Continuous threat hunting">
+<div class="z">
+  <div class="eyebrow in1">03 · Hunt Watch · <b>Inside one hunt</b></div>
+  <h1 class="in2">From blog post <span class="b">to validated detection.</span></h1>
+  <p class="sub in3">Every 4 hours, up to 10 reports, one pipeline: whether it finds something or nothing.</p>
+</div>
+<svg id="wire" viewBox="0 0 1280 720"></svg>
+<div class="stages">
+  <div class="sg in3" data-hl="1" data-hl-off="2"><div class="tag">01 · Ingest</div><h3>Threat research</h3><p>curated feeds + Elastic Security Labs</p></div>
+  <div class="sg agent in3" data-hl="1" data-hl-off="2"><div class="tag">02 · Enrich</div><h3>Pull the tradecraft</h3><p>IoCs · TTPs · severity</p></div>
+  <div class="sg in4" data-hl="2" data-hl-off="3"><div class="tag">03 · Tier 1</div><h3>Search indicators</h3><p>hashes · domains · IPs</p></div>
+  <div class="sg agent in4" data-hl="3" data-hl-off="4"><div class="tag">04 · Tier 2</div><h3>Hunt behaviour</h3><p>schema-aware ES|QL, dry-run first</p></div>
+  <div class="sg in5" data-hl="4" data-hl-off="5"><div class="tag">05 · Find</div><h3>Hits only</h3><p>hosts + users = impact</p></div>
+  <div class="sg gate in5" data-hl="5"><div class="tag">06 · Propose</div><h3>Respond · cover</h3><p>isolate · draft rule, disabled</p></div>
+</div>
+<div class="bot">
+  <div class="doc" data-step="1">
+    <div class="tag">Threat report · enriched<span class="v inc">severity high</span></div>
+    <h3>Backdoored axios@1.14.1 ships a RAT through a phantom dependency</h3>
+    <p>A malicious release pulls in <mark class="i">plain-crypto-js</mark> during <mark class="t">npm install</mark>, which spawns <mark class="t">node → sh → curl</mark> to fetch a second stage from <mark class="i">sfrclak[.]com</mark> and persists as a <mark class="t">launch agent</mark>.</p>
+    <div class="ext"><span class="chip" style="border-color:#E0B000">2 IoCs</span><span class="chip" style="border-color:var(--pink)">T1195.002 supply chain</span><span class="chip" style="border-color:var(--pink)">T1059 command line</span></div>
+  </div>
+  <div class="code" data-step="2">
+    <div class="bar"><i></i><i></i><i></i><span>Tier 1 → Tier 2 · ES|QL</span></div>
+    <div class="t1">Tier 1 · indicators<b id="t1">0 hits</b></div>
+    <pre id="q"></pre>
+    <div class="ok" data-step="3"><span style="color:#48EFCF;border-color:#02BCB7">✓ dry-run valid</span><span style="color:#98A2B3;border-color:#343741">mappings: logs-endpoint.*</span></div>
+  </div>
+  <div class="out">
+    <div class="hit" data-step="4"><div class="tag">Finding · real hit</div><h3>1 host: build-runner-07</h3><p>node → sh → curl during CI · 2 days ago<br>impact: build-runner-07, svc-ci</p></div>
+    <div class="pp card gate" data-step="5"><div class="tag">Proposal · respond<span class="v ask">Asks</span></div><h4>Isolate build-runner-07</h4></div>
+    <div class="pp card gate" data-step="5" style="transition-delay:.15s"><div class="tag">Proposal · coverage gap<span class="v ask">Asks</span></div><h4>Draft ES|QL rule, created disabled</h4></div>
+  </div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const svg = document.getElementById('wire');
+  const p = EW.el('path', {d: 'M100,286 H1180', fill: 'none', stroke: '#D3DAE6', 'stroke-width': 1.5, 'stroke-dasharray': '3 4'}, svg);
+  const flow = AZ.flow(p, {n: 4, dur: 4, r: 4.5, fill: '#0B64DD', shape: 'rect'});
+  const Q = 'FROM logs-endpoint.events.process-*\n| WHERE process.parent.name == "node"\n    AND process.name IN ("sh", "curl")\n| WHERE @timestamp > NOW() - 14 days\n| STATS hosts = COUNT_DISTINCT(host.name)\n    BY process.command_line';
+  const pre = document.getElementById('q');
+  const paint = () => { pre.innerHTML = pre.textContent.replace(/\b(FROM|WHERE|AND|IN|STATS|BY|NOW|COUNT_DISTINCT)\b/g, '<span class="k">$1</span>'); };
+  let typing = null;
+  AZ.on((s, dir) => {
+    clearInterval(typing);
+    if (s < 3){ pre.textContent = s >= 2 ? '// Tier 1: no indicator hits.\n// Tier 2: writing behaviour queries from the report…' : ''; return; }
+    if (dir <= 0 || AZ.still){ pre.textContent = Q; paint(); return; }
+    let n = 0; pre.textContent = '';
+    typing = setInterval(() => { n += 3; pre.textContent = Q.slice(0, n); if (n >= Q.length){ clearInterval(typing); paint(); } }, 22);
+  });
+})();
+</script>
+</body>
+</html>

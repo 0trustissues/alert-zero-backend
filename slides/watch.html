@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>What is a Watch?</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:46px}
+  .sub{font-size:17px}
+  .soc{position:absolute;left:440px;top:192px;width:400px;height:62px;z-index:3;display:flex;align-items:center;gap:14px;padding:0 16px;border:1px solid var(--ink);background:#fff;box-shadow:6px 6px 0 var(--ink)}
+  .soc svg{width:46px;height:26px;flex:none}
+  .soc h3{font:600 16px var(--sans)}
+  .soc p{font-size:12px;color:var(--grey)}
+  .soc .chip{margin-left:auto;color:var(--blue);border-color:var(--blue);font-size:10px}
+  .cols{position:absolute;left:72px;right:72px;top:330px;height:250px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;z-index:3}
+  .wt{border:1px dashed var(--ink);padding:14px 14px 12px;background:rgba(255,255,255,.92);display:flex;flex-direction:column;gap:8px}
+  .wt .hd{display:flex;align-items:center;gap:8px}
+  .wt .hd i{width:10px;height:10px}
+  .wt h3{font:600 16px var(--sans);letter-spacing:-.2px}
+  .wt .job{font-size:12.5px;color:var(--grey);margin-top:-4px}
+  .wk{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);background:#fff;padding:7px 9px;font:500 11.5px var(--sans)}
+  .wk small{font:500 9.5px var(--mono);letter-spacing:.04em;color:var(--grey);text-transform:uppercase}
+  .wk.feed{border-style:dashed;color:var(--grey)}
+  .defs{position:absolute;left:72px;right:72px;top:602px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;z-index:3}
+  .defs div{border-top:2px solid var(--ink);padding-top:7px;font-size:12px;line-height:1.4;color:var(--char)}
+  .defs b{font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:2px}
+  #wires{position:absolute;left:0;top:0;width:1280px;height:720px;z-index:2;overflow:visible}
+  .lgd{position:absolute;left:880px;top:200px;z-index:3;display:flex;flex-direction:column;gap:6px;font:500 10.5px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--char)}
+  .lgd span{display:flex;align-items:center;gap:8px}
+  .lgd i{width:8px;height:8px;display:inline-block}
+</style>
+</head>
+<body data-foot="03 · AlertZero · Watches">
+<div class="z">
+  <div class="eyebrow in1">03 · AlertZero · <b>The building block</b></div>
+  <h1 class="in2">What is a Watch? <span class="b">A team of agents with one job.</span></h1>
+  <p class="sub in3">On duty around the clock, reporting to your people. You set the bounds; they bring you decisions.</p>
+</div>
+<div class="soc in3">
+  <svg viewBox="0 0 46 26"><g fill="#343741"><circle cx="9" cy="7" r="5"/><path d="M1 25c0-6 4-9 8-9s8 3 8 9z"/><circle cx="23" cy="7" r="5"/><path d="M15 25c0-6 4-9 8-9s8 3 8 9z"/><circle cx="37" cy="7" r="5"/><path d="M29 25c0-6 4-9 8-9s8 3 8 9z"/></g></svg>
+  <div><h3>Your SOC team</h3><p>Sets the bounds. Makes the calls that matter.</p></div><span class="chip">Decides</span>
+</div>
+<div class="lgd" data-step="3"><span><i style="background:var(--yellow)"></i>Proposals, with evidence</span><span><i style="background:var(--blue)"></i>Bounds and autonomy</span></div>
+<svg id="wires" viewBox="0 0 1280 720"></svg>
+<div class="cols">
+  <div class="wt" data-step="1"><div class="hd"><i style="background:var(--teal-d)"></i><h3>Triage Watch</h3></div><div class="job">Every alert, before you see it</div>
+    <div class="wk" data-step="2">Alert Triage<small>every 15 min</small></div><div class="wk" data-step="2">Attack Discovery<small>every 24 h</small></div></div>
+  <div class="wt" data-step="1" style="transition-delay:.08s"><div class="hd"><i style="background:var(--yellow)"></i><h3>Hunt Watch</h3></div><div class="job">Hunting that never sleeps</div>
+    <div class="wk" data-step="2">Continuous Threat Hunt<small>every 4 h</small></div><div class="wk feed" data-step="2">Ingest threat feeds<small>feeder</small></div><div class="wk feed" data-step="2">Enrich threat report<small>feeder</small></div></div>
+  <div class="wt" data-step="1" style="transition-delay:.16s"><div class="hd"><i style="background:var(--blue)"></i><h3>Detection Watch</h3></div><div class="job">Fix the rule, not the symptom</div>
+    <div class="wk" data-step="2">Rule Coverage<small>every 1 h</small></div><div class="wk" data-step="2">Rule Tuning<small>every 2 h</small></div></div>
+  <div class="wt" data-step="1" style="transition-delay:.24s"><div class="hd"><i style="background:var(--pink)"></i><h3>Forensics Watch</h3></div><div class="job">Deep research on a host</div>
+    <div class="wk" data-step="2">Endpoint Analysis<small>polls every 1 min</small></div></div>
+</div>
+<div class="defs" data-step="4">
+  <div><b>Watch</b>A group of workflows with one job, plus a settings page. No process of its own.</div>
+  <div><b>Worker</b>A per-space workflow that owns the schedule, the autonomy setting and the budget.</div>
+  <div><b>Shared workflow</b>Holds the logic. Installed in every space; Elastic manages and upgrades it.</div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const svg = document.getElementById('wires');
+  const colX = i => 72 + 18 * i + (1136 - 54) / 4 * (i + .5);
+  const up = [], down = [];
+  for (let i = 0; i < 4; i++){
+    const x = colX(i), sx = 560 + i * 53;
+    const d = `M${x},330 V292 H${sx} V254`;
+    const p = EW.el('path', {d, fill: 'none', stroke: '#1D1E24', 'stroke-width': 1, opacity: 0}, svg);
+    p.style.transition = 'opacity .5s';
+    up.push({p, ctl: AZ.flow(p, {n: 2, dur: 3.2, r: 3.6, fill: '#FEC514', on: false, shape: 'rect'})});
+    const back = EW.el('path', {d: `M${sx},254 V292 H${x} V330`, fill: 'none', stroke: 'none'}, svg);
+    down.push(AZ.flow(back, {n: 1, dur: 3.2, r: 3, fill: '#0B64DD', on: false}));
+  }
+  AZ.on(s => {
+    up.forEach(u => { u.p.setAttribute('opacity', s >= 1 ? .5 : 0); u.ctl.on = s >= 3; });
+    down.forEach(d => d.on = s >= 3);
+  });
+})();
+</script>
+</body>
+</html>

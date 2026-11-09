@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>One system of Watches</title>
+<link rel="stylesheet" href="style/eweb.css">
+<style>
+  /* The slide is authored on a 1920x1080 stage and scaled to the 1280x720 canvas. */
+  :root{
+    --teal:#02BCB7; --det:#0E9F6E; --for:#F04E98; --hunt:#B8741A;   /* Triage, Detection, Forensics, Hunt: same colours as the Watch slides */
+    --human:#0B64DD; --esc:#FF7E62; --red:#E0352B; --closed:#98A2B3;
+    --fs-kick:14px;
+  }
+  body{padding:0;background:#fff}
+  #stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform:scale(.66667);transform-origin:0 0;overflow:hidden;background:#fff;cursor:pointer}
+  .kicker,.mono{font-family:var(--mono)}
+
+  /* chrome */
+  #chapter{position:absolute;top:22px;left:96px;z-index:40;max-width:1280px;--chapter-color:var(--teal)}
+  #chapter .ch-row{display:flex;align-items:center;gap:14px}
+  #chapter .ch-k{font:600 14px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--chapter-color);transition:color .45s}
+  #chapter .ch-t{font-size:30px;font-weight:600;letter-spacing:-.9px;color:var(--ink);margin-top:8px;line-height:1.14}
+  #chapter .ch-t em{font-style:normal;color:var(--chapter-color);transition:color .45s}
+  #status{font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--human);padding:4px 11px;border:1px solid var(--human);background:#fff;opacity:0;transition:opacity .3s}
+  #status.on{opacity:1}
+  #status.complete{color:var(--teal);border-color:var(--teal)}
+  #mode{font:600 12px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--grey);padding:4px 11px;border:1px solid var(--line);background:#fff;cursor:pointer}
+  #mode:hover{border-color:var(--human);color:var(--human)}
+  #counter{position:absolute;top:30px;right:96px;z-index:40;text-align:right;font-family:var(--mono);transition:opacity .5s}
+  #counter .cn-k{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--grey)}
+  #counter .cn-n{font-size:48px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.1;letter-spacing:-1.5px}
+  #counter .cn-n.dec{color:var(--human)}
+  #counter .cn-row{display:flex;gap:34px;justify-content:flex-end}
+  #counter .cn-cell{opacity:0;transition:opacity .5s ease}
+  #counter .cn-cell.on{opacity:1}
+  #rail{position:absolute;left:96px;right:96px;bottom:26px;height:4px;background:var(--line);z-index:40;border-radius:2px}
+  #rail .rl-fill{position:absolute;left:0;top:0;height:100%;width:0;background:linear-gradient(90deg,var(--teal) 0%,var(--det) 25%,var(--teal) 42%,var(--for) 58%,var(--hunt) 82%,var(--teal) 100%);border-radius:2px}
+  #rail .rl-tick{position:absolute;top:-6px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:#fff;border:2px solid var(--slate);cursor:pointer;transition:border-color .3s,background .3s,box-shadow .3s,transform .3s}
+  #rail .rl-tick.done{border-color:var(--tc,var(--teal));background:var(--tc,var(--teal))}
+  #rail .rl-tick.current{transform:scale(1.35);border-color:var(--tc,var(--teal))}
+  #rail .rl-tick.pause{border-style:dashed}
+  #rail .rl-tick.hold{animation:holdPulse 1.2s ease-in-out infinite}
+  @keyframes holdPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--tc,var(--teal)) 70%,transparent)}50%{box-shadow:0 0 0 10px color-mix(in srgb,var(--tc,var(--teal)) 0%,transparent)}}
+  #hint{position:absolute;left:96px;top:974px;z-index:40;font:500 13px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--grey);white-space:nowrap}
+  #hint b{color:var(--ink);font-weight:600}
+  #hint #hmode{color:var(--teal);font-weight:700}
+  #stage.presenter #hint,#stage.presenter #status{display:none}
+  #legend{position:absolute;right:144px;top:758px;z-index:40;display:flex;gap:22px;font:500 13px var(--mono);letter-spacing:.08em;color:var(--char)}
+  #legend .lg{display:flex;align-items:center;gap:9px}
+  #legend .lg i{width:11px;height:11px;border-radius:50%;display:inline-block}
+  #legend .lg i.ring{width:14px;height:14px;background:none;border:2px solid var(--human)}
+
+  /* decision ledger: finished human decisions collapse into this strip */
+  #ledger{position:absolute;left:475px;top:752px;z-index:9;display:flex;align-items:center;gap:10px}
+  #ledger .ld-k{font:600 14px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--grey);margin-right:4px;opacity:0;transition:opacity .4s}
+  #ledger .ld-k.on{opacity:1}
+  #ledger .chip{text-transform:none;letter-spacing:.03em}
+
+  /* focus: while a person is deciding, everything but the card in question steps back */
+  #stage.focus .watch:not(.hot):not(.source),#stage.focus #tray,#stage.focus #huntgrid.on,#stage.focus #dots,#stage.focus #ledger,#stage.focus #legend{opacity:.3;transition:opacity .5s}
+  #stage.focus .watch.source{opacity:.55}
+  #stage.focus .plat,#stage.focus .plat-k{opacity:.6}
+  #stage.focus .fcard.on:not(.decide-on){opacity:.3}
+  .watch,#tray,.plat,.plat-k,#dots,#ledger,#legend,#flows{transition:opacity .5s}
+  .faded{opacity:.1!important}
+
+  /* Elastic Security boundary + AlertZero band */
+  .enc{position:absolute;left:96px;top:128px;width:1728px;height:836px;border:1px solid var(--slate);z-index:1}
+  .enc-label{position:absolute;left:120px;top:116px;padding:2px 10px;background:#fff;border:1px solid var(--slate);font:600 14px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--char);z-index:3}
+  .band{position:absolute;left:120px;top:156px;width:1680px;height:640px;--spot-x:10%;--spot-color:rgba(2,188,183,.1);border:1px solid color-mix(in srgb,var(--teal) 55%,#fff);background:linear-gradient(180deg,color-mix(in srgb,var(--teal) 7%,#fff),#fff 75%);z-index:2;overflow:hidden;isolation:isolate}
+  .band::after{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(430px 245px at var(--spot-x) 25%,var(--spot-color),transparent 72%);transition:background .55s ease}
+  .band-head{position:absolute;left:24px;top:10px;display:flex;align-items:baseline;gap:10px;z-index:1}
+  .band-name{font-size:28px;font-weight:700;letter-spacing:-1.2px;color:var(--for)}
+  .band-role{font-size:18px;font-weight:500;color:var(--ink);letter-spacing:-.3px}
+
+  /* Watch tiles */
+  .watch{position:absolute;top:258px;width:390px;height:104px;background:#fff;border:1px solid var(--line);border-top:3px solid var(--wc);padding:12px 17px;display:flex;flex-direction:column;justify-content:center;gap:3px;z-index:5;opacity:.7;transition:transform .45s cubic-bezier(.22,1,.36,1),box-shadow .4s ease,border-color .4s ease,opacity .5s}
+  .watch .w-verb{font:600 13px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--wc)}
+  .watch .w-name{font-size:26px;font-weight:600;letter-spacing:-.9px}
+  .watch .w-sub{font-size:14.5px;color:var(--char);line-height:1.3}
+  .watch.source{opacity:.85}
+  .watch.impact{opacity:.9;border-color:var(--human)}
+  .watch.impact .w-badge{color:var(--human);border-color:var(--human)}
+  .watch.hot{opacity:1;transform:translateY(-3px);box-shadow:6px 6px 0 var(--wc)}
+  #stage.overview .watch{opacity:.95;transform:none}
+  .watch .w-badge{position:absolute;right:12px;top:12px;font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;color:var(--wc);background:#fff;border:1px solid var(--wc);opacity:0;transition:opacity .4s}
+  .watch .w-badge.on{opacity:1}
+
+  /* flow lines */
+  #flows{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:4;pointer-events:none}
+  #flows path{fill:none;stroke:var(--slate);stroke-width:1.5;stroke-linecap:round;opacity:.35;transition:opacity .4s,stroke .4s,stroke-width .4s}
+  #flows path.on{stroke:var(--fc);opacity:1;stroke-width:2.75;stroke-dasharray:5 10;animation:dashMove .8s linear infinite}
+  @keyframes dashMove{to{stroke-dashoffset:-30}}
+  #flows text{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;fill:var(--fc);paint-order:stroke;stroke:#fff;stroke-width:6px;opacity:0;transition:opacity .4s}
+  #flows text.on{opacity:1}
+
+  /* cards */
+  .fcard{position:absolute;background:#fff;border:1px solid var(--line);border-top:3px solid var(--cc,var(--teal));padding:18px 20px;text-align:left;display:flex;flex-direction:column;gap:9px;z-index:8;opacity:0;transform:translateY(18px) scale(.985);box-shadow:0 18px 36px -26px rgba(29,30,36,.45);transition:opacity .5s ease,transform .5s cubic-bezier(.22,1,.36,1),border-color .4s,box-shadow .4s}
+  .fcard.on{opacity:1;transform:none}
+  .fcard.handoff{opacity:.32;transform:translateX(-10px) scale(.985)}
+  .fcard .c-kick{font:700 13px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--cc,var(--teal));display:flex;justify-content:space-between;align-items:center}
+  .fcard .c-kick .who{color:var(--grey);font-weight:500}
+  .fcard .c-title{font-size:23px;font-weight:600;letter-spacing:-.7px;line-height:1.2}
+  .fcard .c-body{font-size:16.5px;color:var(--char);line-height:1.42}
+  .fcard .c-body b{color:var(--ink);font-weight:600}
+  .fcard .c-row{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{font:600 12.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border:1px solid;display:inline-flex;align-items:center;gap:7px;opacity:0;transform:scale(.85);transition:opacity .35s,transform .35s cubic-bezier(.34,1.56,.64,1)}
+  .chip.on{opacity:1;transform:none}
+  .chip-ent{color:var(--ink);border-color:var(--slate);background:#EEF1F6}
+  .chip-red{color:var(--red);border-color:var(--red);background:#FDECEA}
+  .chip-for{color:#C2306F;border-color:var(--for);background:#FEF1F7}
+  .chip-hunt{color:var(--hunt);border-color:var(--hunt);background:#FBF3E6}
+  .chip-human{color:var(--human);border-color:var(--human);background:#E8F0FD}
+  .chip .tick{display:none}.chip.done .tick{display:inline}
+  .chip.done{color:var(--human);border-color:var(--human);background:#E8F0FD}
+
+  /* You decide ring + decision buttons */
+  .decide{position:absolute;left:50%;top:-24px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;z-index:12;opacity:0;transition:opacity .35s}
+  .decide.on{opacity:1}
+  .decide .d-k{font:700 13px var(--mono);letter-spacing:.2em;text-transform:uppercase;color:#fff;padding:5px 13px;background:var(--human)}
+  .fcard.decide-on{border-color:var(--human);border-top-color:var(--human);box-shadow:8px 8px 0 var(--human)}
+  .fcard.decide-on::before{content:'';position:absolute;inset:-10px;border:1px solid color-mix(in srgb,var(--human) 55%,transparent);animation:ringPulse 1.6s ease-out infinite;pointer-events:none}
+  @keyframes ringPulse{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.06);opacity:0}}
+  .btns{display:flex;gap:8px;margin-top:4px}
+  .btn{font:600 13px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:8px 15px;border:1px solid var(--slate);color:var(--grey);background:#fff;transition:all .3s}
+  .btn.primary{color:var(--human);border:1.5px solid var(--human)}
+  .btn.primary.hit{color:#fff;background:var(--human)}
+  .approved,.completed{position:absolute;right:14px;top:-14px;font:700 12.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#fff;padding:4px 11px;background:var(--human);opacity:0;transform:scale(.4);transition:opacity .35s,transform .45s cubic-bezier(.34,1.56,.64,1)}
+  .approved.on,.completed.on{opacity:1;transform:none}
+  .fcard:has(.approved.on) .c-kick>span:last-child,.fcard:has(.completed.on) .c-kick>span:last-child{visibility:hidden}
+  .fcard:has(.completed.on){border-color:color-mix(in srgb,var(--human) 50%,var(--line))}
+
+  /* closed tray */
+  #tray{position:absolute;left:144px;top:420px;width:307px;height:290px;border:1px dashed var(--closed);background:rgba(245,247,250,.7);z-index:3;padding:14px 16px}
+  #tray.history{opacity:.5}
+  #tray .t-k{font:600 13px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--grey);display:flex;justify-content:space-between}
+  #tray .t-n{font:600 32px var(--mono);color:var(--char);font-variant-numeric:tabular-nums;margin-top:4px}
+  #tray .t-reasons{position:absolute;left:14px;right:14px;bottom:12px;display:flex;flex-direction:column;gap:5px}
+  #tray .t-r{font:400 13px var(--mono);color:var(--grey);letter-spacing:.02em;opacity:0;transform:translateY(6px);transition:opacity .4s,transform .4s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #tray .t-r.on{opacity:1;transform:none}
+  #tray .t-r b{color:var(--char);font-weight:600}
+
+  /* investigation card internals */
+  .ent{display:flex;gap:8px;flex-wrap:wrap}
+  .tl{position:relative;height:38px;margin:2px 0}
+  .tl .tl-line{position:absolute;left:0;top:16px;height:2px;width:100%;background:var(--slate);transform-origin:left;transform:scaleX(0);transition:transform 1.2s ease}
+  .tl.on .tl-line{transform:scaleX(1)}
+  .tl .tl-ev{position:absolute;top:9px;width:16px;height:16px;border-radius:50%;background:var(--ink);border:3px solid #fff;box-shadow:0 0 0 1px var(--ink);opacity:0;transform:scale(.4);transition:opacity .3s,transform .3s}
+  .tl .tl-ev span{position:absolute;top:19px;left:50%;transform:translateX(-50%);font:500 12px var(--mono);letter-spacing:.04em;color:var(--grey);white-space:nowrap}
+  .tl .tl-ev.on{opacity:1;transform:none}
+  .tl .tl-ev.ext{background:var(--hunt);box-shadow:0 0 0 1px var(--hunt)}
+  .blast{display:flex;align-items:center;gap:10px;font:600 13px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--grey)}
+  .blast .hosts{display:flex;gap:5px}
+  .blast .h{width:18px;height:18px;border:1px solid var(--slate);opacity:.45;transition:all .4s}
+  .blast .h.on{opacity:1;border-color:var(--red);background:#FADBD8}
+  .blast .h.hunt{border-color:var(--hunt);background:#F6E4C6}
+  .blast .b-n{color:var(--red);font-weight:700;font-size:14px}
+  .evidence{font:400 13px var(--mono);letter-spacing:.02em;color:var(--grey);display:flex;gap:14px;row-gap:4px;flex-wrap:wrap;white-space:nowrap;opacity:0;transition:opacity .5s}
+  .evidence.on{opacity:1}
+  .evidence b{color:var(--human);font-weight:700}
+
+  /* hunt grid */
+  #huntgrid{position:absolute;left:1360px;top:420px;width:416px;height:300px;z-index:6;opacity:0;transition:opacity .5s;padding:0 30px}
+  #huntgrid.on{opacity:1}
+  #huntgrid .hg-k{font:600 13px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--hunt);margin-bottom:8px;display:flex;justify-content:space-between;white-space:nowrap}
+  #huntgrid .hg-k span{color:var(--grey)}
+  #huntgrid canvas{display:block}
+
+  /* platform row */
+  .plat{position:absolute;left:120px;top:826px;width:1680px;display:grid;grid-template-columns:repeat(5,1fr);gap:24px;z-index:2}
+  .plat::before{content:'';position:absolute;left:0;right:0;top:-18px;height:1px;background:var(--line)}
+  .plat .pt{position:relative;border:1px solid var(--line);background:#fff;padding:12px 14px;display:flex;flex-direction:column;gap:3px;height:76px;justify-content:center;opacity:.6;transition:border-color .4s,opacity .4s,box-shadow .4s,background .4s}
+  .plat .pt .pt-n{font-size:17px;font-weight:600;letter-spacing:-.4px;color:var(--char)}
+  .plat .pt .pt-b{font-size:13px;color:var(--grey)}
+  .plat .pt.hot{opacity:1;border-color:var(--pc,var(--teal));background:color-mix(in srgb,var(--pc,var(--teal)) 6%,#fff);box-shadow:inset 0 3px 0 var(--pc,var(--teal))}
+  .plat .pt.hot .pt-n{color:var(--ink)}
+  .plat .pt .pt-use{position:absolute;right:12px;top:-12px;font:600 12.5px var(--mono);letter-spacing:.04em;padding:3px 9px;color:#fff;background:var(--pc,var(--teal));opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s}
+  .plat .pt.hot .pt-use{opacity:1;transform:none}
+  .plat-k{position:absolute;left:120px;top:914px;font:600 13px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--grey);z-index:2}
+  .plat.all .pt{opacity:.85;border-color:color-mix(in srgb,var(--teal) 45%,var(--line))}
+
+  /* autonomy dial */
+  #dial{position:absolute;right:24px;top:14px;display:flex;align-items:center;gap:16px;z-index:1;opacity:.45;transition:opacity .5s}
+  #dial.on{opacity:1}
+  #dial .d-k{font:600 13px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--char);white-space:nowrap}
+  #dial .d-k b{color:var(--teal);font-weight:700}
+  #dial .seg{display:flex;border:1px solid var(--slate);overflow:hidden;background:#fff;transition:box-shadow .5s,border-color .5s}
+  #dial.on .seg{border-color:var(--teal);box-shadow:5px 5px 0 var(--teal)}
+  #dial .seg span{text-align:center;padding:7px 15px;font:600 12.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--grey);border-right:1px solid var(--slate)}
+  #dial .seg span:last-child{border-right:0}
+  #dial .seg span.sel{color:#fff;background:var(--teal)}
+  #dial .d-line{font-size:16.5px;color:var(--ink);line-height:1.3;white-space:nowrap;opacity:0;transition:opacity .5s}
+  #dial.on .d-line{opacity:1}
+  #dial .d-line b{color:var(--teal);font-weight:600}
+  #dots{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:4;pointer-events:none}
+
+  /* end frame */
+  #endcard{position:absolute;left:475px;top:440px;width:1301px;height:270px;background:radial-gradient(closest-side,#fff 62%,rgba(255,255,255,0));z-index:20;display:flex;align-items:center;justify-content:center;gap:110px;opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1);pointer-events:none}
+  #endcard.on{opacity:1;transform:none}
+  #endcard:not(.on){transition-duration:.15s}
+  #endcard .en{text-align:center}
+  #endcard .en-n{font:600 140px var(--mono);letter-spacing:-6px;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+  #endcard .en-n.dec{color:var(--human)}
+  #endcard .en-k{font:600 16px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--char);margin-top:14px}
+  #endcard .en-sep{width:1px;height:150px;background:var(--slate)}
+  #endcard .en-line{position:absolute;left:0;right:0;bottom:-30px;text-align:center;font-size:28px;font-weight:600;letter-spacing:-.8px;color:var(--ink)}
+  #endcard .en-line b{color:var(--human);font-weight:600}
+  #stage.endstate #investigation,#stage.endstate #ledger,#stage.endstate #legend{opacity:.07!important}
+  #stage.endstate #counter{opacity:0}
+  @media (prefers-reduced-motion:reduce){#flows path.on,.fcard.decide-on::before{animation:none!important}}
+</style>
+</head>
+<body data-foot="AlertZero · Watches working together">
+<div id="stage">
+  <div id="chapter">
+    <div class="ch-row"><span class="ch-k" id="ch-k">Chapter 1 of 7 &middot; Intake</span><span id="status">Paused</span><button id="mode" type="button">Manual</button></div>
+    <div class="ch-t" id="ch-t">Triage Watch works every alert. Noise closes with a written reason.</div>
+  </div>
+  <div id="counter"><div class="cn-row">
+    <div class="cn-cell on" id="cn-seen"><div class="cn-k">Alerts seen today</div><div class="cn-n" id="n-seen">0</div></div>
+    <div class="cn-cell" id="cn-dec"><div class="cn-k">Human decisions today</div><div class="cn-n dec" id="n-dec">0</div></div>
+  </div></div>
+  <div id="legend">
+    <div class="lg"><i style="background:var(--closed)"></i>closed with a reason</div>
+    <div class="lg"><i style="background:var(--esc)"></i>escalated</div>
+    <div class="lg"><i style="background:var(--red)"></i>confirmed threat</div>
+    <div class="lg"><i class="ring"></i>you decide</div>
+  </div>
+  <div class="enc" aria-hidden="true"></div><div class="enc-label">Elastic Security</div>
+  <div class="band">
+    <div class="band-head"><span class="band-name">AlertZero</span><span class="band-role">&middot; the agentic layer of Elastic Security</span></div>
+    <div id="dial"><span class="d-line"><b>You set how far it goes, per Watch.</b> Changing it never changes what's included.</span><span class="d-k">Autonomy &middot; <b>per Watch</b></span><div class="seg"><span>Manual</span><span class="sel">Assisted</span><span>Supervised</span></div></div>
+  </div>
+  <svg id="flows" viewBox="0 0 1920 1080" aria-hidden="true">
+    <path id="f-td" style="--fc:var(--det)" d="M339 262 Q546 190 753 262"/>
+    <path id="f-ti" style="--fc:var(--esc)" d="M339 362 Q690 410 1000 392"/>
+    <path id="f-tf" style="--fc:var(--for)" d="M339 262 Q753 150 1167 262"/>
+    <path id="f-fh" style="--fc:var(--hunt)" d="M1167 262 Q1374 190 1581 262"/>
+    <path id="f-hi" style="--fc:var(--hunt)" d="M1581 362 Q1420 382 1250 418"/>
+    <path id="f-hd" style="--fc:var(--det)" d="M1581 262 Q1167 110 753 262"/>
+    <text id="l-td" style="--fc:var(--det)" x="546" y="214" text-anchor="middle">noise pattern + dispositions</text>
+    <text id="l-ti" style="--fc:var(--esc)" x="680" y="384" text-anchor="middle">Attack Discovery &middot; one attack</text>
+    <text id="l-tf" style="--fc:var(--for)" x="753" y="194" text-anchor="middle">forensics request</text>
+    <text id="l-fh" style="--fc:var(--hunt)" x="1374" y="214" text-anchor="middle">indicators + technique</text>
+    <text id="l-hi" style="--fc:var(--hunt)" x="1160" y="406" text-anchor="middle">2 more hosts</text>
+    <text id="l-hd" style="--fc:var(--det)" x="1110" y="182" text-anchor="middle">new detection idea</text>
+  </svg>
+  <div class="watch" id="w-triage" style="--wc:var(--teal);left:144px"><span class="w-verb">Always on</span><span class="w-name">Triage Watch</span><span class="w-sub">Every alert a verdict; related alerts, one attack</span><span class="w-badge" id="b-triage">working</span></div>
+  <div class="watch" id="w-detect" style="--wc:var(--det);left:558px"><span class="w-verb">Always on</span><span class="w-name">Detection Watch</span><span class="w-sub">Fix the rule, not the symptom</span><span class="w-badge" id="b-detect">proposing</span></div>
+  <div class="watch" id="w-forens" style="--wc:var(--for);left:972px"><span class="w-verb">When needed</span><span class="w-name">Forensics Watch</span><span class="w-sub">Endpoint evidence and the response Proposal</span><span class="w-badge" id="b-forens">analysing</span></div>
+  <div class="watch" id="w-hunt" style="--wc:var(--hunt);left:1386px"><span class="w-verb">Always on</span><span class="w-name">Hunt Watch</span><span class="w-sub">One finding into a sweep of the estate</span><span class="w-badge" id="b-hunt">sweeping</span></div>
+  <div id="tray"><div class="t-k"><span>Closed with a reason</span></div><div class="t-n" id="t-n">0</div>
+    <div class="t-reasons">
+      <div class="t-r"><b>Scheduled job</b> &middot; nightly backup</div>
+      <div class="t-r"><b>Admin tool</b> &middot; signed, approved</div>
+      <div class="t-r"><b>Benign scanner</b> &middot; internal range</div>
+      <div class="t-r"><b>Duplicate</b> &middot; same host, 4 min</div>
+    </div>
+  </div>
+  <div class="fcard" id="tuning" style="--cc:var(--det);left:475px;top:420px;width:360px">
+    <div class="decide"><span class="d-k">You decide</span></div>
+    <div class="c-kick"><span>Tuning proposal</span><span class="who">Detection Watch</span></div>
+    <div class="c-title">Scheduled task created by service account</div>
+    <div class="c-body">Fired 212 times this week, 211 closed as noise.<br><b>Proposed:</b> exception for the nightly backup job.<br><b>Backtest:</b> tomorrow's queue 18% smaller. 211 closure reasons attached.</div>
+    <div class="btns"><span class="btn primary" id="tb-approve">Approve</span><span class="btn">Edit</span><span class="btn">Dismiss</span></div>
+    <span class="approved" id="t-approved">Approved &middot; applied</span>
+  </div>
+  <div class="fcard" id="investigation" style="--cc:var(--ink);left:850px;top:420px;width:500px;min-height:300px">
+    <div class="c-kick"><span>Investigation</span><span class="who">Shared record &middot; every Watch</span></div>
+    <div class="c-title" id="inv-title">Credential misuse on host-07</div>
+    <div class="ent">
+      <span class="chip chip-ent" id="e-host">host-07</span><span class="chip chip-ent" id="e-acct">svc-account</span>
+      <span class="chip chip-red" id="e-bin">unknown binary</span><span class="chip chip-for" id="e-verdict">malware family identified &middot; C2 domain</span>
+      <span class="chip chip-hunt" id="e-hunt">+ host-12, host-19</span>
+    </div>
+    <div class="tl" id="tl"><div class="tl-line"></div>
+      <div class="tl-ev" style="left:4%"><span>logon</span></div><div class="tl-ev" style="left:30%"><span>priv esc</span></div><div class="tl-ev" style="left:56%"><span>binary drop</span></div><div class="tl-ev" style="left:80%"><span>C2 beacon</span></div><div class="tl-ev ext" style="left:96%"><span>lateral</span></div>
+    </div>
+    <div class="blast"><span>Blast radius</span><div class="hosts" id="hosts"><i class="h"></i><i class="h"></i><i class="h"></i><i class="h"></i><i class="h"></i></div><span class="b-n" id="b-n">0 hosts</span></div>
+    <div class="evidence" id="evidence"><span><b>4</b> ES|QL queries</span><span><b>1</b> Forensics verdict</span><span><b>3</b> approved actions</span><span><b>2</b> Hunt hits</span></div>
+    <span class="completed" id="inv-completed">Completed &middot; evidence attached</span>
+  </div>
+  <div class="fcard" id="response" style="--cc:var(--for);left:1360px;top:420px;width:416px">
+    <div class="decide"><span class="d-k">You decide</span></div>
+    <div class="c-kick"><span>Response proposal</span><span class="who">Forensics Watch</span></div>
+    <div class="c-title">Contain host-07 and cut the C2</div>
+    <div class="c-body">Isolate <b>host-07</b> via Elastic Defend, disable <b>svc-account</b>, block C2 domain via firewall (third-party action).</div>
+    <div class="c-row"><span class="chip chip-for" id="a1"><span class="tick">&#10003;</span>Defend &middot; isolate</span><span class="chip chip-for" id="a2"><span class="tick">&#10003;</span>Identity provider &middot; disable</span><span class="chip chip-for" id="a3"><span class="tick">&#10003;</span>Firewall &middot; block</span></div>
+    <div class="btns"><span class="btn primary" id="rb-approve">Approve</span><span class="btn">Edit</span><span class="btn">Dismiss</span></div>
+    <span class="approved" id="r-approved">Approved</span>
+  </div>
+  <div id="huntgrid"><div class="hg-k">Estate sweep<span id="hg-n">0 of 48 hosts</span></div><canvas id="hgc" width="356" height="270"></canvas></div>
+  <div class="plat" id="plat">
+    <div class="pt" id="p-data"><span class="pt-n">Elasticsearch data</span><span class="pt-b">ES|QL, all your data at retention</span><span class="pt-use" id="pu-data">ES|QL queries</span></div>
+    <div class="pt" id="p-rules"><span class="pt-n">Detections and ML</span><span class="pt-b">Rules, ML jobs, Attack Discovery</span><span class="pt-use" id="pu-rules">rule updated</span></div>
+    <div class="pt" id="p-defend"><span class="pt-n">Elastic Defend</span><span class="pt-b">Endpoint prevention and response</span><span class="pt-use">isolate host</span></div>
+    <div class="pt" id="p-work"><span class="pt-n">Workflows and Agent Builder</span><span class="pt-b">Durable execution, agents, skills</span><span class="pt-use" id="pu-work">workflow run</span></div>
+    <div class="pt" id="p-model"><span class="pt-n">Your choice of model</span><span class="pt-b">Elastic-hosted or your own</span><span class="pt-use">reasoning</span></div>
+  </div>
+  <div class="plat-k">The platform executes &middot; AlertZero decides</div>
+  <div id="ledger"><span class="ld-k" id="ld-k">Key human gates</span><span class="chip chip-human done" id="ld1"><span class="tick">&#10003;</span>Exception approved</span><span class="chip chip-human done" id="ld2"><span class="tick">&#10003;</span>Containment approved, 3 actions</span></div>
+  <canvas id="dots" width="1920" height="1080"></canvas>
+  <div id="endcard">
+    <div class="en"><div class="en-n" id="en-seen">0</div><div class="en-k">alerts seen today</div></div>
+    <div class="en-sep"></div>
+    <div class="en"><div class="en-n dec" id="en-dec">0</div><div class="en-k">human decisions</div></div>
+    <div class="en-line"><b>Agents do the work.</b> You decide.</div>
+  </div>
+  <div id="hint"><span id="hmode"></span> &middot; <b>Enter</b> approve / continue &middot; <b>[ ]</b> chapters &middot; <b>1&ndash;7</b> jump &middot; <b>S</b> start over &middot; <b>A</b> auto-run &middot; <b>P</b> presenter</div>
+  <div id="rail"><div class="rl-fill" id="rl-fill"></div></div>
+</div>
+
+<script src="style/eweb.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const cl = (v, a, b) => Math.max(a, Math.min(b, v));
+  const ease = p => 1 - Math.pow(1 - p, 3);
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const still = navigator.webdriver;   // PDF/PPTX export: jump to the finished frame
+
+  // Watch colours, same as the rest of the deck
+  const TEAL = 'var(--teal)', DET = 'var(--det)', FOR = 'var(--for)', HUNT = 'var(--hunt)';
+
+  // Chapters (seconds on the master clock). Human pauses are windows where the alert flow freezes.
+  const CH = [
+    { t: 0,  name: 'Intake', accent: '#02BCB7', spotX: '13%', spot: 'rgba(2,188,183,0.12)', cap: '<em>Triage Watch</em> works every alert. Noise closes with a written reason.' },
+    { t: 12, name: 'Feedback to Detection', accent: '#0E9F6E', spotX: '38%', spot: 'rgba(14,159,110,0.11)', pause: true, cap: '<em>Detection Watch</em> fixes the rule, not the symptom. A person approves before it ships.' },
+    { t: 26, name: 'Escalation', accent: '#02BCB7', spotX: '13%', spot: 'rgba(2,188,183,0.12)', cap: '<em>Triage Watch</em> groups the related alerts into one attack and opens the Investigation.' },
+    { t: 36, name: 'Forensics depth', accent: '#F04E98', spotX: '62%', spot: 'rgba(240,78,152,0.1)', cap: '<em>Forensics Watch</em> adds endpoint evidence when the Investigation needs it.' },
+    { t: 43, name: 'Response', accent: '#F04E98', spotX: '62%', spot: 'rgba(240,78,152,0.1)', pause: true, cap: '<em>Forensics Watch</em> stages the response as a Proposal. It always waits for a person.' },
+    { t: 55, name: 'Hunt loop', accent: '#B8741A', spotX: '87%', spot: 'rgba(184,116,26,0.11)', cap: '<em>Hunt Watch</em> sweeps the whole estate from one finding, and feeds what it learns back.' },
+    { t: 66, name: 'Close', accent: '#02BCB7', spotX: '52%', spot: 'rgba(2,188,183,0.09)', cap: 'One system. Every Watch informs the others. People decide when it matters.' }
+  ];
+  const END = 74;
+  const PAUSES = [[18, 20.5], [48, 50.5]];
+  function flowT(t) { let f = t; for (const [a, b] of PAUSES) f -= cl(t - a, 0, b - a); return f; }
+  function inPause(t) { return PAUSES.some(([a, b]) => t >= a && t < b); }
+  const SHIP = flowT(20.5); // flow-time when the tuned rule ships and the flood thins
+
+  // Deterministic alert stream (seeded), in flow-time so it freezes with the human pauses.
+  let seed = 7;
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+  const DOTS = [];
+  (function build() {
+    let f = 0.2;
+    while (f < flowT(END) + 2) {
+      const amber = rnd() < 0.07 && f > 2;
+      DOTS.push({ b: f, amber, y0: 220 + rnd() * 180, bend: (rnd() - 0.5) * 60,
+        tx: 162 + rnd() * 270, ty: 486 + rnd() * 110, jx: (rnd() - 0.5) * 40, cx: 900 + rnd() * 380, cy: 426 + rnd() * 6, r: 2.8 + rnd() * 1.8 });
+      // The approved tuning proposal reduces the overall queue by the backtested 18%.
+      f += (f < SHIP ? 0.065 : 0.0793) * (0.7 + rnd() * 0.6);
+    }
+  })();
+  const T_INVESTIGATION = flowT(27.5);   // escalated dots start dropping into the investigation card
+  const TRIAGE = { x: 339, y: 308 }, T_OUT = { x: 339, y: 358 }, INVEST = { x: 1000, y: 392 };
+
+  const cv = $('dots'), ctx = cv.getContext('2d');
+  const COL = { raw: 'rgba(52,55,65,', grey: 'rgba(152,162,179,', amber: 'rgba(255,126,98,' };
+  function drawDots(t) {
+    const f = flowT(t);
+    ctx.clearRect(0, 0, 1920, 1080);
+    let settled = 0;
+    for (const d of DOTS) {
+      const a = f - d.b; if (a < 0) break;
+      let x, y, col, alpha = 1, r = d.r;
+      if (a < 1.2) { const p = ease(a / 1.2); x = lerp(-20, TRIAGE.x, p); y = lerp(d.y0, TRIAGE.y, p) + Math.sin(p * Math.PI) * d.bend; col = COL.raw; alpha = cl(a * 4, 0, 1); }
+      else if (a < 1.5) { x = TRIAGE.x + d.jx * 0.3; y = TRIAGE.y; col = d.amber ? COL.amber : COL.grey; }
+      else if (!d.amber) {
+        const p = ease(cl((a - 1.5) / 1.0, 0, 1)); x = lerp(T_OUT.x + d.jx, d.tx, p); y = lerp(T_OUT.y, d.ty, p); col = COL.grey; alpha = p >= 1 ? 0.7 : 1; r = lerp(d.r, 2.4, p); if (p >= 1) settled++;
+      } else {
+        const p = ease(cl((a - 1.5) / 1.5, 0, 1)); x = lerp(T_OUT.x, INVEST.x + d.jx, p); y = lerp(T_OUT.y, INVEST.y, p) + Math.sin(p * Math.PI) * 26; col = COL.amber; r = d.r + 1.2;
+        if (p >= 1) { const since = f - Math.max(d.b + 3.0, T_INVESTIGATION); if (since > 0) { const q = ease(cl(since / 1.0, 0, 1)); x = lerp(INVEST.x + d.jx, d.cx, q); y = lerp(INVEST.y, d.cy, q); alpha = 1 - q; if (q >= 1) continue; } else { y += Math.sin(f * 3 + d.jx) * 3; } }
+      }
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = col + alpha + ')'; ctx.fill();
+    }
+    return settled;
+  }
+  // Hunt Watch radar grid (Hunt amber)
+  const hg = $('hgc'), hctx = hg.getContext('2d');
+  const HOSTS = []; for (let r = 0; r < 6; r++) for (let c = 0; c < 8; c++) HOSTS.push({ x: 22 + c * 44.5, y: 22 + r * 45 });
+  const HITS = { 21: 58.8, 34: 60.4 };
+  function drawHunt(t) {
+    hctx.clearRect(0, 0, 356, 270);
+    const p = cl((t - 56) / 6, 0, 1), ang = p * Math.PI * 2 * 1.5 - Math.PI / 2, cx = 178, cy = 135;
+    let found = 0;
+    HOSTS.forEach((h, i) => {
+      const ha = Math.atan2(h.y - cy, h.x - cx), swept = ((ang - ha) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+      const lit = p > 0 && (p >= 1 || swept < Math.PI * 0.6);
+      const hit = HITS[i] !== undefined && t >= HITS[i];
+      if (hit) found++;
+      hctx.beginPath(); hctx.arc(h.x, h.y, hit ? 7 : 3.5, 0, Math.PI * 2);
+      hctx.fillStyle = hit ? 'rgba(224,53,43,1)' : lit ? 'rgba(184,116,26,' + (0.3 + 0.6 * Math.max(0, 1 - swept)) + ')' : '#C9D1DE';
+      hctx.fill();
+      if (hit) { hctx.strokeStyle = 'rgba(224,53,43,.35)'; hctx.lineWidth = 3; hctx.beginPath(); hctx.arc(h.x, h.y, 12, 0, Math.PI * 2); hctx.stroke(); }
+    });
+    if (p > 0 && p < 1) {
+      const g = hctx.createConicGradient ? hctx.createConicGradient(ang - 0.9, cx, cy) : null;
+      if (g) { g.addColorStop(0, 'rgba(184,116,26,0)'); g.addColorStop(0.14, 'rgba(184,116,26,0.22)'); g.addColorStop(0.145, 'rgba(184,116,26,0)'); g.addColorStop(1, 'rgba(184,116,26,0)'); hctx.fillStyle = g; hctx.fillRect(0, 0, 356, 270); }
+      hctx.beginPath(); hctx.moveTo(cx, cy); hctx.lineTo(cx + Math.cos(ang) * 260, cy + Math.sin(ang) * 260); hctx.strokeStyle = 'rgba(184,116,26,0.9)'; hctx.lineWidth = 1.75; hctx.stroke();
+    }
+    $('hg-n').textContent = (p >= 1 ? 48 : Math.round(p * 48)) + ' of 48 · ' + found + (found === 1 ? ' hit' : ' hits');
+  }
+
+  // Declarative element states: [id, class, from, to]
+  const ON = [
+    ['b-triage', 'on', 0.6, 66], ['w-triage', 'hot', 0.6, 12],
+    ['f-td', 'on', 12, 20.5], ['l-td', 'on', 12.3, 20.5], ['w-triage', 'source', 12, 20.5], ['w-detect', 'hot', 12, 26], ['b-detect', 'on', 13.5, 20.5],
+    // tuning card: appears, is decided, then collapses into the ledger so the slot is clear for later
+    ['tuning', 'on', 12.15, 28], ['tuning', 'handoff', 26, 28], ['tuning', 'decide-on', 18, 20.5], ['tb-approve', 'hit', 19.6, 21.5], ['t-approved', 'on', 20.5, 26], ['w-triage', 'impact', 20.5, 26],
+    ['ld-k', 'on', 28.2, 1e9], ['ld1', 'on', 28.2, 1e9],
+    // escalation: Triage Watch groups the alerts via Attack Discovery and opens the shared Investigation
+    ['f-ti', 'on', 26, 34], ['l-ti', 'on', 26.3, 34], ['w-triage', 'hot', 26, 36], ['tray', 'history', 26, 1e9],
+    ['investigation', 'on', 26.25, 1e9], ['e-host', 'on', 28.5, 1e9], ['e-acct', 'on', 29.2, 1e9], ['tl', 'on', 30, 1e9],
+    ['e-bin', 'on', 36.5, 1e9], ['f-tf', 'on', 37.5, 41], ['l-tf', 'on', 37.8, 41], ['w-triage', 'source', 37.5, 41], ['w-forens', 'hot', 37.5, 42.5], ['b-forens', 'on', 37.5, 41], ['e-verdict', 'on', 41, 1e9],
+    // response card (Forensics Watch's Proposal): staged, decided, executed, then collapses into the ledger before Hunt takes the slot
+    ['response', 'on', 43.15, 55.25], ['a1', 'on', 44.2, 55.25], ['a2', 'on', 44.6, 55.25], ['a3', 'on', 45, 55.25], ['response', 'decide-on', 48, 50.5], ['rb-approve', 'hit', 49.6, 51.5], ['r-approved', 'on', 50.5, 55.25],
+    ['a1', 'done', 51.5, 1e9], ['a2', 'done', 52.3, 1e9], ['a3', 'done', 53.1, 1e9], ['w-forens', 'hot', 43, 55], ['b-forens', 'on', 43, 55],
+    ['ld2', 'on', 55.5, 1e9],
+    ['f-fh', 'on', 55.05, 58.5], ['l-fh', 'on', 55.15, 58.5], ['w-forens', 'source', 55.05, 58.5], ['w-hunt', 'hot', 55.05, 65.5], ['b-hunt', 'on', 55.25, 62], ['huntgrid', 'on', 55.25, 1e9],
+    ['f-hi', 'on', 62, 65], ['l-hi', 'on', 62.3, 65], ['w-hunt', 'source', 62, 66.5], ['e-hunt', 'on', 62.8, 1e9], ['f-hd', 'on', 63.5, 66.5], ['l-hd', 'on', 63.8, 66.5], ['w-detect', 'hot', 63.5, 66.5],
+    // close: the working panels step back, the investigation and the dial carry the message
+    ['inv-completed', 'on', 66.5, 1e9], ['evidence', 'on', 67, 1e9], ['cn-dec', 'on', 67.5, 1e9], ['dial', 'on', 68.5, 1e9],
+    ['huntgrid', 'faded', 66.5, 1e9], ['tray', 'faded', 66.5, 1e9], ['dots', 'faded', 66.5, 1e9], ['plat', 'all', 67.5, 1e9]
+  ];
+  const decideEls = document.querySelectorAll('.decide');
+  const trayReasons = document.querySelectorAll('#tray .t-r');
+  const tlEvs = document.querySelectorAll('#tl .tl-ev');
+  const hostEls = document.querySelectorAll('#hosts .h');
+  const nodes = {}; ON.forEach(([id]) => { nodes[id] = nodes[id] || $(id); });
+  const stageEl = $('stage');
+  // Platform row: what each Watch is actually using, when. [tile, from, to, colour, in-use tag]
+  const PLAT = [
+    ['p-work', 0.6, 12, TEAL, 'triage worker'], ['p-work', 12, 18, DET, 'rule tuning worker'],
+    ['p-work', 18, 20.5, DET, 'waitForInput · approval'], ['p-work', 20.5, 26, DET, 'exception step ran'],
+    ['p-work', 26, 36, TEAL, 'attack discovery worker'], ['p-work', 36, 43, FOR, 'forensics skill'],
+    ['p-work', 43, 48, FOR, 'proposal staged'], ['p-work', 48, 50.5, FOR, 'waitForInput · approval'],
+    ['p-work', 50.5, 55, FOR, 'connectors: IdP, firewall'], ['p-work', 55, 63.5, HUNT, 'continuous hunt worker'],
+    ['p-work', 63.5, 66.5, DET, 'rule creation worker'],
+    ['p-model', 0.6, 12, TEAL, 'alert verdicts'], ['p-model', 13, 18, DET, 'noise diagnosis'],
+    ['p-model', 27.5, 35, TEAL, 'attack grouping'], ['p-model', 37.5, 41, FOR, 'binary analysis'],
+    ['p-model', 43.5, 48, FOR, 'proposal drafting'], ['p-model', 56, 62, HUNT, 'hunt hypotheses'], ['p-model', 63.5, 66.5, DET, 'rule drafting'],
+    ['p-data', 0.6, 12, TEAL, 'alert + entity context'], ['p-data', 13.5, 18, DET, 'backtest over history'],
+    ['p-data', 28, 34, TEAL, 'ES|QL timeline queries'], ['p-data', 37.5, 41, FOR, 'process + file telemetry'], ['p-data', 56, 62, HUNT, 'ES|QL estate sweep'],
+    ['p-rules', 0.6, 12, TEAL, 'rules firing'], ['p-rules', 12, 18, DET, 'rule + exception read'],
+    ['p-rules', 20.5, 24, DET, 'exception applied'], ['p-rules', 26.5, 34, TEAL, 'Attack Discovery'], ['p-rules', 63.5, 66.5, DET, 'new rule proposed'],
+    ['p-defend', 2, 12, TEAL, 'endpoint alerts'], ['p-defend', 37.5, 41, FOR, 'get-file: unknown binary'], ['p-defend', 51.5, 55, FOR, 'isolate host-07']
+  ];
+  const platEls = {}; PLAT.forEach(([id]) => { platEls[id] = platEls[id] || { el: $(id), use: $(id).querySelector('.pt-use') }; });
+  // Explicit final frames for chapter holds, independent of animation windows
+  const HOLD_KEEP = {
+    1: [['tuning', 'on'], ['t-approved', 'on']],
+    2: [['investigation', 'on']],
+    3: [['investigation', 'on'], ['e-verdict', 'on']],
+    4: [['investigation', 'on'], ['response', 'on'], ['r-approved', 'on'], ['a1', 'on'], ['a1', 'done'], ['a2', 'on'], ['a2', 'done'], ['a3', 'on'], ['a3', 'done']],
+    5: [['investigation', 'on'], ['huntgrid', 'on'], ['e-hunt', 'on']]
+  };
+
+  function render(t) {
+    const f = flowT(t);
+    // an id+class pair may have several windows; any active window wins
+    const state = {};
+    ON.forEach(([id, c, a, b]) => { const k = id + '|' + c; state[k] = state[k] || (t >= a && t < b); });
+    if (hold && hold.kind === 'chapter') {
+      let holdChapter = 0;
+      CH.forEach((c, i) => { if (t >= c.t) holdChapter = i; });
+      (HOLD_KEEP[holdChapter] || []).forEach(([id, c]) => { state[id + '|' + c] = true; });
+    }
+    Object.keys(state).forEach(k => { const [id, c] = k.split('|'); nodes[id].classList.toggle(c, state[k]); });
+    stageEl.classList.toggle('focus', inPause(t));
+    stageEl.classList.toggle('overview', t >= CH[CH.length - 1].t);
+    Object.keys(platEls).forEach(id => {
+      const w = PLAT.find(([pid, a, b]) => pid === id && t >= a && t < b);
+      platEls[id].el.classList.toggle('hot', !!w);
+      if (w) { platEls[id].el.style.setProperty('--pc', w[3]); platEls[id].use.textContent = w[4]; }
+    });
+    decideEls.forEach(d => d.classList.toggle('on', d.parentElement.classList.contains('decide-on')));
+    trayReasons.forEach((r, i) => r.classList.toggle('on', t >= 3 + i * 2.2));
+    tlEvs.forEach((e, i) => e.classList.toggle('on', i < 4 ? t >= 30.6 + i * 0.6 : t >= 63.5));
+    hostEls.forEach((h, i) => { h.classList.toggle('on', i < 3 ? t >= 33 + i * 0.6 : t >= 63 + (i - 3) * 0.6); h.classList.toggle('hunt', i >= 3); });
+    const nh = [33, 33.6, 34.2, 63, 63.6].filter(x => t >= x).length; $('b-n').textContent = nh + (nh === 1 ? ' host' : ' hosts');
+    $('inv-title').textContent = t >= 63 ? 'Credential misuse on host-07, lateral to 4 more hosts' : 'Credential misuse on host-07';
+    $('b-triage').textContent = t >= 26 && t < 36 ? 'grouping' : t >= 20.5 ? 'queue ↓18%' : 'working';
+    $('b-forens').textContent = t >= 43 ? 'proposing' : 'analysing';
+    // 50 alerts/s before approval, 41.176/s after: the card's backtested 18% queue reduction.
+    // At the end of the 69 flow-seconds shown, the total lands at exactly 3,000.
+    const seen = Math.round(Math.min(f, SHIP) * 50 + Math.max(0, f - SHIP) * (2100 / 51));
+    $('n-seen').textContent = seen.toLocaleString('en-US');
+    const settled = drawDots(t);
+    $('t-n').textContent = Math.round(Math.min(settled * 5, seen * 0.96)).toLocaleString('en-US');
+    $('n-dec').textContent = String(Math.round(6 * ease(cl((t - 67.5) / 2, 0, 1))));
+    drawHunt(t);
+    // chapter chrome
+    let ci = 0; CH.forEach((c, i) => { if (t >= c.t) ci = i; });
+    if (ci !== render.ci) {
+      render.ci = ci;
+      const chapter = CH[ci];
+      $('ch-k').textContent = 'Chapter ' + (ci + 1) + ' of 7 · ' + chapter.name;
+      $('ch-t').innerHTML = chapter.cap;
+      $('chapter').style.setProperty('--chapter-color', chapter.accent);
+      document.querySelector('.band').style.setProperty('--spot-x', chapter.spotX);
+      document.querySelector('.band').style.setProperty('--spot-color', chapter.spot);
+    }
+    $('rl-fill').style.width = (t / END * 100) + '%';
+    ticks.forEach((k, i) => {
+      k.classList.toggle('done', t >= CH[i].t);
+      k.classList.toggle('current', i === ci);
+      k.classList.toggle('hold', !!hold && i === ci);
+    });
+    // end frame
+    const endstate = t >= 70.5;
+    stageEl.classList.toggle('endstate', endstate);
+    $('endcard').classList.toggle('on', endstate);
+    $('en-seen').textContent = seen.toLocaleString('en-US');
+    $('en-dec').textContent = $('n-dec').textContent;
+    $('mode').textContent = auto ? 'Auto-run' : 'Manual';
+    $('hmode').textContent = auto ? 'Auto-run' : 'Live';
+    const st = $('status');
+    st.classList.toggle('complete', ended);
+    if (hold && hold.kind === 'approve') { st.textContent = 'Your call · Enter to approve'; st.classList.add('on'); }
+    else if (hold) { st.textContent = 'Chapter done · Enter to continue'; st.classList.add('on'); }
+    else if (inPause(t)) { st.textContent = 'Human in the loop · flow paused'; st.classList.add('on'); }
+    else if (ended) { st.textContent = 'Complete · S to start over'; st.classList.add('on'); }
+    else if (!playing) { st.textContent = 'Paused · Enter to resume'; st.classList.add('on'); }
+    else st.classList.remove('on');
+  }
+  // Rail ticks
+  const rail = $('rail'), ticks = [];
+  CH.forEach((c, i) => {
+    const k = document.createElement('div'); k.className = 'rl-tick' + (c.pause ? ' pause' : ''); k.style.left = (c.t / END * 100) + '%';
+    k.style.setProperty('--tc', c.accent);
+    k.title = c.name; k.addEventListener('click', e => { e.stopPropagation(); api.chapter(i); }); rail.appendChild(k); ticks.push(k);
+  });
+
+  // Clock with gates. A gate is a point on the master clock where the run holds until the presenter clicks:
+  // the two approvals (the person in the room IS the human in the loop) and chapter holds from chapter 3 onward.
+  // Auto-run (the button, or ?auto) releases every gate on a timer, for hands-free playback.
+  const GATES = [];
+  PAUSES.forEach(([a]) => GATES.push({ t: a + 1.5, kind: 'approve' }));
+  CH.slice(2).forEach(c => GATES.push({ t: c.t - 0.05, kind: 'chapter' }));
+  GATES.sort((x, y) => x.t - y.t);
+  const AUTO_RELEASE = { approve: 2.5, chapter: 0.8 };
+  let t = 0, playing = !reduced, last = null, ended = false, hold = null, holdSince = 0;
+  let auto = /[?&]auto\b/.test(location.search), presenter = /[?&]presenter\b/.test(location.search);
+  function frame(now) {
+    if (last === null) last = now;
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    if (playing && !hold) {
+      const nt = Math.min(END, t + dt);
+      const g = GATES.find(g => g.t > t && g.t <= nt);
+      if (g) { t = g.t; hold = g; holdSince = now; } else t = nt;
+      if (t >= END) { playing = false; ended = true; }
+    } else if (hold && auto && now - holdSince > AUTO_RELEASE[hold.kind] * 1000) api.release();
+    render(t);
+    requestAnimationFrame(frame);
+  }
+  const api = {
+    get t() { return t; }, get playing() { return playing; }, get ended() { return ended; }, get hold() { return hold ? hold.kind : null; }, get auto() { return auto; },
+    chapters: CH.map(c => ({ t: c.t, name: c.name })), END, PAUSES, GATES,
+    seek(v) { t = cl(v, 0, END); ended = t >= END; hold = null; render(t); return t; },
+    play() { if (t >= END) t = 0; playing = true; ended = false; last = null; },
+    pause() { playing = false; render(t); },
+    release() { if (!hold) return false; hold = null; holdSince = 0; playing = true; last = null; return true; },
+    // click / Enter: release a gate if holding, replay when finished, otherwise pause/resume
+    advance() { if (hold) return api.release(); if (ended) return api.replay(); playing ? api.pause() : api.play(); },
+    replay() { t = 0; ended = false; hold = null; render.ci = -1; playing = true; last = null; render(t); },
+    chapter(i) { i = cl(i, 0, CH.length - 1); render.ci = -1; api.seek(CH[i].t); },
+    currentChapter() { let ci = 0; CH.forEach((c, i) => { if (t >= c.t) ci = i; }); return ci; },
+    // forward releases a gate first; back restarts the chapter before going to the previous one
+    step(dir) { if (hold && dir > 0) return api.release(); const ci = api.currentChapter(); api.chapter(dir > 0 ? ci + 1 : (t - CH[ci].t > 1.5 ? ci : ci - 1)); },
+    setAuto(v) { auto = v === undefined ? !auto : !!v; render(t); },
+    setPresenter(v) { presenter = v === undefined ? !presenter : !!v; stageEl.classList.toggle('presenter', presenter); }
+  };
+  window.__flow = api;
+
+  // The player owns Space, the arrows and G T F N K E V M L D C R Z H, so this slide uses keys it leaves free:
+  // Enter approve/continue, [ ] chapters, 1-7 jump, S start over, A auto-run, P presenter. Click works too.
+  stageEl.addEventListener('click', () => api.advance());
+  $('mode').addEventListener('click', e => { e.stopPropagation(); api.setAuto(); });
+  document.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey || (e.target && /INPUT|TEXTAREA/.test(e.target.tagName))) return;
+    const k = e.key.toLowerCase();
+    if (e.key === 'Enter') { e.preventDefault(); api.advance(); }
+    else if (k === 'a') api.setAuto();
+    else if (k === 'p') api.setPresenter();
+    else if (k === 's') api.replay();
+    else if (e.key === ']') api.step(1);
+    else if (e.key === '[') api.step(-1);
+    else if (e.key >= '1' && e.key <= '7') api.chapter(+e.key - 1);
+  });
+  stageEl.classList.toggle('presenter', presenter);
+
+  render.ci = -1;
+  if (reduced || still) { api.seek(END); } else { render(0); }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

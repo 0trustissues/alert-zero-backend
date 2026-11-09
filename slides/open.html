@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Why Elastic</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:50px;max-width:580px}
+  .sub{font-size:16.5px;max-width:540px}
+  .pl{margin-top:24px;width:540px;display:flex;flex-direction:column;gap:12px}
+  .p{background:var(--blue);color:#fff;padding:16px 20px}
+  .p .kick{color:#fff;opacity:.8}
+  .p h3{font:600 20px var(--sans);letter-spacing:-.4px;margin-top:4px}
+  .p p{font-size:13.5px;line-height:1.45;opacity:.92;margin-top:4px}
+  #iso{left:600px;top:40px;width:680px;height:640px}
+</style>
+</head>
+<body data-foot="05 · Why Elastic">
+<div class="z">
+  <div class="eyebrow in1">05 · <b>Why Elastic</b></div>
+  <h1 class="in2">Built where your data <span class="b">already lives.</span></h1>
+  <p class="sub in3">AlertZero is not a bolt-on. It runs on the platform, the data and the model you choose.</p>
+  <div class="pl">
+    <div class="p" data-step="1"><div class="kick">One data foundation</div><h3>Years of history, one query</h3><p>Cloud, on-prem and edge in one place. Every Worker reads the same evidence your analysts do.</p></div>
+    <div class="p" data-step="2"><div class="kick">Open and sovereign</div><h3>Our model or yours</h3><p>Including local, air-gapped models. Swap it tomorrow and nothing breaks. The workflows are readable.</p></div>
+    <div class="p" data-step="3"><div class="kick">Running today</div><h3>In production, not a roadmap</h3><p>Elastic installs, manages and upgrades the workflows in every space. You turn them on.</p></div>
+  </div>
+</div>
+<svg id="iso" class="iso" viewBox="0 0 680 640"></svg>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  EW.dots({x: 640, y: 40, w: 640, h: 620, seed: 33, blobs: 6, thr: .52});
+  const svg = document.getElementById('iso'), sc = AZ.iso(svg, {ox: 330, oy: 300, s: .8});
+  const BZ = 40;
+  sc.rect({x: -30, y: -30, w: 330, d: 300, z: 0, delay: .05});
+  sc.box({x: 0, y: 0, w: 270, d: 240, h: BZ, c: 'blue', delay: .1, drop: 90, order: -1000});
+  const sites = [['Cloud', 20, 150], ['On-prem', 100, 150], ['Edge', 180, 150]];
+  sites.forEach(([n, x, y], i) => sc.box({x, y, w: 56, d: 56, h: 30 + i * 12, z: BZ, c: 'slate', stroke: false, delay: .3 + i * .08, drop: 60}));
+  sc.label({at: [270, 200, BZ / 2], side: 'r', len: 40, title: 'Elasticsearch', sub: ['Cloud · on-prem · edge', 'Years of history'], raw: true, delay: 1.1});
+  // the model slot: a glass frame holding whichever model you choose
+  const F = {x: 120, y: 20, w: 90, z: BZ};
+  sc.rect({x: F.x - 8, y: F.y - 8, w: F.w + 16, d: F.w + 16, z: BZ, sw: 1.2, delay: .8});
+  const ours = sc.box({x: F.x + 8, y: F.y + 8, w: F.w - 16, d: F.w - 16, h: F.w - 16, z: BZ, c: 'pink', delay: .9, drop: 120, order: 50});
+  const yours = sc.box({x: F.x + 8, y: F.y + 8, w: F.w - 16, d: F.w - 16, h: F.w - 16, z: BZ, c: 'ink', delay: 1e9, drop: 120, order: 51});
+  sc.box({x: F.x, y: F.y, w: F.w, d: F.w, h: F.w, z: BZ, c: 'glass', wire: true, inner: true, stroke: '#343741', delay: 1.0, drop: 0, snap: false, order: 60});
+  const lab = sc.label({at: [F.x + F.w, F.y, BZ + F.w * .7], side: 'r', len: 50, title: 'Model slot', sub: ['Elastic managed LLM'], raw: true, delay: 1.2});
+  const runL = sc.label({at: [F.x, F.y + F.w, BZ + F.w + 10], side: 'l', len: 60, title: 'Managed workflows', sub: ['Upgraded by Elastic'], raw: true, delay: 1e9});
+  sc.run();
+  const sub = lab.txt.children[1];
+  let swap = false, last = 0, mine = false;
+  AZ.on(s => { swap = s >= 2; AZ.reveal(sc, runL, s >= 3); if (!swap){ mine = false; ours.op = 1; yours.delay = 1e9; sub.textContent = 'ELASTIC MANAGED LLM'; } });
+  EW.loop(() => {
+    if (!swap || AZ.still) return;
+    const t = sc.now(); if (t - last < 3.2) return; last = t; mine = !mine;
+    const inn = mine ? yours : ours, out = mine ? ours : yours;
+    out.delay = 1e9; inn.delay = t; inn.op = 1;
+    sub.textContent = mine ? 'YOUR MODEL · AIR-GAPPED' : 'ELASTIC MANAGED LLM';
+  });
+})();
+</script>
+</body>
+</html>

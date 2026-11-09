@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Triage Watch</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:48px;max-width:540px}
+  .sub{font-size:16px;max-width:520px}
+  .steps{margin-top:22px;width:530px;display:flex;flex-direction:column}
+  .st{display:grid;grid-template-columns:44px 1fr;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+  .st:last-child{border-bottom:1px solid var(--line)}
+  .st .k{font:600 12px var(--mono);color:var(--blue);padding-top:2px}
+  .st h3{font:600 15px var(--sans);letter-spacing:-.2px}
+  .st p{font-size:12.5px;line-height:1.45;color:var(--grey);margin-top:2px}
+  .st code{font:500 11px var(--mono);background:var(--bg);padding:1px 4px;color:var(--ink)}
+  .win{left:640px;top:96px;width:568px;height:540px;overflow:hidden}
+  .pane{position:absolute;left:0;right:0;top:0;bottom:0}
+  .th,.tr{display:grid;grid-template-columns:1fr 110px 118px;gap:10px;align-items:center;padding:0 16px}
+  .th{height:30px;font:600 9.5px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--grey);border-bottom:1px solid var(--line)}
+  .tr{height:44px;border-bottom:1px solid var(--line);font-size:12.5px;transition:background .4s}
+  .tr .rule{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;height:auto;background:none}
+  .tr .host{font:400 11px var(--mono);color:var(--char)}
+  .tr .vc{position:relative;height:22px}
+  .tr .vc>*{position:absolute;left:0;top:2px}
+  .claim{font:500 9.5px var(--mono);color:var(--grey);border:1px dashed var(--slate);padding:2px 6px;letter-spacing:.02em}
+  body[data-at="3"] .tr.fp{background:#E6FBF7}
+  .prop{position:absolute;left:16px;right:16px;bottom:16px;padding:14px 16px}
+  .prop .tag{font-size:10px;display:flex;justify-content:space-between;align-items:center}
+  .prop h3{font:600 16px var(--sans);margin-top:6px}
+  .prop p{font:400 11px var(--mono);color:var(--char);margin-top:3px}
+  .prop .acts{display:flex;gap:8px;margin-top:10px}
+  .prop .btn{font-size:12px;padding:6px 14px}
+  .ad{padding:18px 20px}
+  .ad .tag{font-size:10px;color:var(--grey)}
+  .ad h3{font:600 19px var(--sans);letter-spacing:-.3px;margin-top:6px}
+  .chk{margin-top:14px;display:flex;flex-direction:column}
+  .chk div{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px dashed var(--line);font-size:13.5px}
+  .chk i{font-style:normal;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font:700 12px var(--mono);border:1px solid}
+  .chk .ok{color:#027A76;border-color:var(--teal-d);background:#E6FBF7}
+  .chk .q{color:var(--char);border-color:var(--slate);background:var(--bg)}
+  .chk small{font:400 10.5px var(--mono);color:var(--grey)}
+  .rule-of{margin-top:14px;padding:10px 12px;background:var(--bg);font-size:12.5px;color:var(--char);border-left:3px solid var(--ink)}
+</style>
+</head>
+<body data-foot="03 · AlertZero · Triage Watch">
+<div class="z">
+  <div class="eyebrow in1">03 · Triage Watch · <b>Alert Triage + Attack Discovery</b></div>
+  <h1 class="in2">Every alert, <span class="b">before you see it.</span></h1>
+  <p class="sub in3">Two Workers: Alert Triage sweeps every 15 minutes, Attack Discovery reviews every 24 hours.</p>
+  <div class="steps">
+    <div class="st" data-step="1"><span class="k">01</span><div><h3>Claim a fair batch per rule</h3><p>Within an hourly budget of 1,300 alerts. A <code>az:triage_pending</code> tag stops two sweeps taking the same alert.</p></div></div>
+    <div class="st" data-step="2"><span class="k">02</span><div><h3>One verdict per alert</h3><p>Written back as a tag and a note, with the reasons. Nothing is closed yet.</p></div></div>
+    <div class="st" data-step="3"><span class="k">03</span><div><h3>Confident false positives become one proposal</h3><p>Confidence ≥ 0.85, grouped per rule. Dismiss it and the alerts go back to the normal queue.</p></div></div>
+    <div class="st" data-step="4"><span class="k">04</span><div><h3>Attacks get four checks</h3><p>True positive, false positive or inconclusive. Missing telemetry never counts as a false positive.</p></div></div>
+  </div>
+</div>
+<div class="win in3">
+  <div class="pane" data-off="4">
+    <div class="bar"><i></i><i></i><i></i><span>Elastic Security · Alerts · Triage</span></div>
+    <div class="th"><span>Rule</span><span>Host</span><span>Verdict</span></div>
+    <div id="rows"></div>
+    <div class="prop card gate" data-step="3"><div class="tag">Proposal · Alert Triage<span class="v ask">Waiting for you</span></div><h3>Close 15 alerts as false positive</h3><p>Firewall Denied Connection Burst · confidence ≥ 0.85</p><div class="acts"><span class="btn fill">Approve</span><span class="btn">Dismiss</span></div></div>
+  </div>
+  <div class="pane" data-step="4" data-fx="fade" style="background:#fff">
+    <div class="bar"><i></i><i></i><i></i><span>Attack Discovery · Review per attack</span></div>
+    <div class="ad">
+      <div class="tag">Attack 03 · Investigation opened</div>
+      <h3>Malware with service account abuse</h3>
+      <div class="chk" id="chk">
+        <div><i class="ok">✓</i>Alert linkage<small>3 alerts, one chain</small></div>
+        <div><i class="ok">✓</i>Entity role<small>svc-backup is a service account</small></div>
+        <div><i class="q">?</i>Process parent<small>no process events</small></div>
+        <div><i class="ok">✓</i>Network destination<small>rare external host</small></div>
+      </div>
+      <div class="rule-of"><b>Inconclusive</b>, not false positive: a missing signal is treated as unknown.</div>
+    </div>
+    <div class="prop card gate"><div class="tag">Proposal · Attack Discovery<span class="v ask">Waiting for you</span></div><h3>Hand off to forensics</h3><p>Writes a security.analyze_endpoint indicator</p><div class="acts"><span class="btn fill">Approve</span><span class="btn">Dismiss</span></div></div>
+  </div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const rows = [
+    ['Firewall Denied Connection Burst', 'fw-edge-02', 'fp', '.97'], ['Unusual Process Spawned by Office', 'ws-fin-114', 'tp', '.91'],
+    ['Firewall Denied Connection Burst', 'fw-edge-02', 'fp', '.95'], ['Firewall Denied Connection Burst', 'fw-edge-01', 'fp', '.93'],
+    ['Suspicious PowerShell Download', 'build-runner-07', 'tp', '.88'], ['Rare Parent Process', 'srv-app-03', 'inc', '.52'],
+    ['Firewall Denied Connection Burst', 'fw-edge-01', 'fp', '.92'], ['Firewall Denied Connection Burst', 'fw-edge-02', 'fp', '.90']
+  ];
+  const L = {fp: 'False positive', tp: 'True positive', inc: 'Inconclusive'};
+  document.getElementById('rows').innerHTML = rows.map(([r, h, v, c], i) =>
+    `<div class="tr ${v}"><span class="rule">${r}</span><span class="host">${h}</span><span class="vc">` +
+    `<span class="claim" data-step="1" data-off="2" style="transition-delay:${i * .06}s">az:triage_pending</span>` +
+    `<span class="v ${v}" data-step="2" data-fx="pop" style="transition-delay:${.1 + i * .12}s">${L[v]} ${c}</span></span></div>`).join('');
+  [...document.querySelectorAll('#chk div')].forEach((d, i) => { d.dataset.step = 4; d.style.transitionDelay = (.3 + i * .22) + 's'; });
+})();
+</script>
+</body>
+</html>

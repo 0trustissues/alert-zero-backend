@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Key takeaways</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:54px}
+  .list{position:absolute;left:72px;width:760px;top:210px;display:flex;flex-direction:column;gap:22px;z-index:2}
+  .it{display:grid;grid-template-columns:86px 1fr;gap:12px;align-items:start}
+  .it b{font:500 40px/1 var(--mono);color:var(--blue);letter-spacing:-1.5px}
+  .it p{font-size:16.5px;line-height:1.5;color:var(--char)}
+  .it p strong{color:var(--ink);font-weight:600}
+  .close{position:absolute;left:72px;width:760px;top:556px;font-size:17px;line-height:1.5;color:var(--ink);border-left:3px solid var(--pink);padding-left:16px;z-index:2}
+  #iso{left:820px;top:120px;width:460px;height:520px}
+</style>
+</head>
+<body data-foot="05 · Before you go">
+<div class="z">
+  <div class="eyebrow in1">05 · <b>Before you go</b></div>
+  <h1 class="in2">Key <span class="b">takeaways.</span></h1>
+</div>
+<div class="list">
+  <div class="it" data-step="1"><b>01</b><p><strong>The SOC hits bottlenecks everywhere.</strong> We covered two answers: blocking known threats at the endpoint, and hunting the unknown that never trips an alert. Both run on one platform.</p></div>
+  <div class="it" data-step="2"><b>02</b><p><strong>Prevention cuts the alert load at the source.</strong> Every threat stopped before it executes is one fewer alert to chase and one fewer investigation to open.</p></div>
+  <div class="it" data-step="3"><b>03</b><p><strong>AlertZero works the rest, and you stay in command.</strong> Four Watches triage, hunt, tune and investigate around the clock. You see the query and the evidence, and you approve every consequential action.</p></div>
+</div>
+<p class="close" data-step="4">This is AlertZero: agentic capabilities across Elastic Security that adopt at your pace, keep you in command, and run wherever your data lives.</p>
+<svg id="iso" class="iso" viewBox="0 0 460 520"></svg>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const sc = AZ.iso(document.getElementById('iso'), {ox: 230, oy: 250, s: .8});
+  sc.rect({x: -20, y: -20, w: 240, d: 240, z: 0, delay: .05});
+  // three blocks for three takeaways, stacking up; the pink one on top is AlertZero
+  const b1 = sc.box({x: 0, y: 0, w: 200, d: 200, h: 40, c: 'blue', delay: 1e9, drop: 90});
+  const b2 = sc.box({x: 30, y: 30, w: 140, d: 140, h: 40, z: 40, c: 'slate', stroke: false, delay: 1e9, drop: 90});
+  const b3 = sc.box({x: 60, y: 60, w: 80, d: 80, h: 80, z: 80, c: 'pink', delay: 1e9, drop: 110, float: 4, floatSpeed: 1.1});
+  const L = [sc.label({at: [200, 100, 20], side: 'r', len: 38, title: 'One platform', raw: true, delay: 1e9}),
+    sc.label({at: [170, 100, 60], side: 'r', len: 59, title: 'Prevention', raw: true, delay: 1e9}),
+    sc.label({at: [140, 60, 130], side: 'r', len: 40, title: 'AlertZero', raw: true, delay: 1e9})];
+  sc.run();
+  AZ.on(s => { [[b1, L[0]], [b2, L[1]], [b3, L[2]]].forEach((p, i) => AZ.reveal(sc, p, s > i, {gap: .3})); });
+})();
+</script>
+</body>
+</html>

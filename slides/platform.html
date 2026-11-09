@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>One platform</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{max-width:540px;font-size:48px}
+  .sub{font-size:16.5px;max-width:500px}
+  .rows{margin-top:26px;width:510px;display:flex;flex-direction:column}
+  .row{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+  .row:last-child{border-bottom:1px solid var(--line)}
+  .row .tag{display:flex;align-items:flex-start;gap:8px;margin-top:3px;line-height:1.35}
+  .row .tag .sw{flex:none;margin-top:2px}
+  .row p{font-size:13.5px;line-height:1.45;color:var(--char)}
+  .row p b{color:var(--ink);font-weight:600}
+  #iso{left:560px;top:40px;width:720px;height:640px}
+</style>
+</head>
+<body class="soft" data-foot="02 · The platform">
+<div class="z">
+  <div class="eyebrow in1">02 · The platform · <b>Elastic Security</b></div>
+  <h1 class="in2">One platform. <span class="b">AlertZero is built on all of it.</span></h1>
+  <p class="sub in3">SIEM, endpoint security and native automation on the Elasticsearch you know. No new silo and no new data store.</p>
+  <div class="rows">
+    <div class="row" data-step="1"><span class="tag"><i class="sw" style="background:var(--blue)"></i>Elasticsearch</span><p><b>Every signal, at retention.</b> The evidence every AlertZero Worker reads before it decides anything.</p></div>
+    <div class="row" data-step="2"><span class="tag"><i class="sw" style="background:var(--teal)"></i>Workflows</span><p><b>Workers are ordinary Elastic Workflows.</b> Elastic installs, manages and upgrades them in every space.</p></div>
+    <div class="row" data-step="3"><span class="tag"><i class="sw" style="background:var(--pink-l)"></i>Agent Builder<br>Context Engine</span><p><b>Models, memory and the case file.</b> One model call per judgement, shared memory between Watches, an Investigation journal.</p></div>
+    <div class="row" data-step="4"><span class="tag"><i class="sw" style="background:var(--pink)"></i>AlertZero</span><p><b>The agentic layer on top.</b> Every proposal lands in Kibana, where your analysts approve.</p></div>
+  </div>
+</div>
+<svg id="iso" class="iso" viewBox="0 0 720 640"></svg>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  EW.dots({x: 600, y: 50, w: 680, h: 620, gap: 8.5, r: .85, color: [200, 207, 218], seed: 21, blobs: 5, thr: .58});
+  const svg = document.getElementById('iso');
+  const sc = AZ.iso(svg, {ox: 348, oy: 240, s: .8});
+  const BZ = 40, H = {label: '#F5F7FA'};
+  sc.rect({x: -30, y: -30, w: 360, d: 296, z: 0, delay: .05});
+  const base = sc.box({x: 0, y: 0, w: 300, d: 236, h: BZ, c: 'blue', delay: .1, drop: 90, order: -1000});
+  const names = [['Streams', 'ingest'], ['Jina AI', 'models'], ['Context Engine', 'memory'], ['Workflows', 'automation']];
+  const fins = names.map((n, i) => sc.box({x: 120, y: 14 + i * 56, w: 166, d: 30, h: 76, z: BZ, c: 'slate', stroke: false, delay: .3 + i * .08, drop: 70}));
+  sc.label({at: [286, 29, BZ + 50], side: 'r', len: 26, title: 'Platform services', sub: ['Streams · Jina AI', 'Context Engine', 'Workflows'], raw: true, delay: 1.2, halo: H.label});
+  // Elastic Security solution, with the AlertZero layer that docks onto it on the last build
+  const sec = sc.box({x: 16, y: 70, w: 80, d: 80, h: 80, z: BZ, c: 'orange', delay: .7, drop: 90});
+  const az = sc.box({x: 16, y: 70, w: 80, d: 80, h: 24, z: BZ + 96, c: 'pink', delay: 1e9, drop: 120, float: 4, floatSpeed: 1.2, order: 5000});
+  sc.label({at: [16, 150, BZ + 40], side: 'l', len: 46, title: 'Elastic Security', sub: 'SIEM · endpoint · cloud', raw: true, delay: 1.05, halo: H.label});
+  const azl = sc.label({at: [16, 150, BZ + 108], side: 'l', len: 46, title: 'AlertZero', sub: 'The agentic layer', raw: true, delay: 1e9, halo: H.label});
+  sc.label({at: [300, 200, BZ / 2], side: 'r', len: 40, title: 'Elasticsearch', sub: 'The search database', raw: true, delay: 1.0, halo: H.label});
+  sc.run();
+  const paint = (b, F) => { const [l, r, t] = b.g.children; l.setAttribute('fill', F.left); r.setAttribute('fill', F.right); t.setAttribute('fill', F.top); };
+  const ring = EW.el('polygon', {fill: 'none', stroke: '#0B64DD', 'stroke-width': 1.4, opacity: 0}, sc.floor);
+  let ringOn = false;
+  AZ.on(s => {
+    ringOn = s === 1;
+    paint(fins[3], s >= 2 ? EW.FACES.teal : EW.FACES.slate);
+    [1, 2].forEach(i => paint(fins[i], s >= 3 ? {top: '#FFFFFF', left: '#F58FC0', right: '#F04E98'} : EW.FACES.slate));
+    AZ.reveal(sc, [az, azl], s >= 4, {at: .05, gap: .35});
+  });
+  EW.loop(t => {
+    if (!ringOn){ ring.setAttribute('opacity', 0); return; }
+    const k = (t % 2.2) / 2.2, g = 16 + k * 60;
+    ring.setAttribute('points', [[-g, -g], [300 + g, -g], [300 + g, 236 + g], [-g, 236 + g]].map(([x, y]) => sc.P(x, y, 0).join(',')).join(' '));
+    ring.setAttribute('opacity', (1 - k) * .8);
+  });
+})();
+</script>
+</body>
+</html>

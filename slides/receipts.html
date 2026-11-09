@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Receipts, by design</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:48px;max-width:640px}
+  .sub{font-size:16.5px;max-width:620px}
+  .grid{position:absolute;left:72px;top:232px;width:640px;display:grid;grid-template-columns:1fr 1fr;gap:12px;z-index:2}
+  .m{border:1px solid var(--line);padding:14px 16px;background:#fff;min-height:118px}
+  .m .tag{display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--blue)}
+  .m h3{font:600 16px var(--sans);letter-spacing:-.3px;margin-top:6px}
+  .m p{font-size:12.5px;line-height:1.45;color:var(--char);margin-top:4px}
+  .paper{position:absolute;left:770px;top:70px;width:400px;z-index:2;background:#fff;filter:drop-shadow(0 10px 22px rgba(30,40,80,.16));padding:22px 24px 62px;font:400 12px/1.7 var(--mono);color:var(--ink)}
+  .paper::after{content:'';position:absolute;left:0;right:0;bottom:-12px;height:12px;background:linear-gradient(-45deg,transparent 8px,#fff 0) 0 0/16px 12px,linear-gradient(45deg,transparent 8px,#fff 0) 0 0/16px 12px}
+  .paper .hd{text-align:center;font-weight:600;letter-spacing:.12em}
+  .paper .tt{text-align:center;font:600 15px var(--sans);margin-top:4px}
+  .paper .cut{border-top:1px dashed var(--grey-l);margin:10px 0}
+  .ln{display:grid;grid-template-columns:96px 1fr;gap:10px}
+  .ln b{font-weight:600;color:var(--grey);letter-spacing:.04em}
+  .ln.k span{color:var(--blue);font-weight:600}
+  .stamp{position:absolute;right:22px;bottom:16px;transform:rotate(-12deg);border:2px solid var(--teal-d);color:#027A76;font:700 13px var(--mono);letter-spacing:.12em;padding:5px 10px;opacity:0;transition:opacity .3s 1s,transform .3s 1s}
+  .on .stamp,.stamp.on{opacity:1}
+</style>
+</head>
+<body class="soft" data-foot="04 · Trust and control · Receipts">
+<div class="z">
+  <div class="eyebrow in1">04 · Trust and control · <b>Receipts</b></div>
+  <h1 class="in2">Every finding <span class="b">carries its receipts.</span></h1>
+  <p class="sub in3">Trust isn't added at the end. It is how each Worker is built.</p>
+</div>
+<div class="grid">
+  <div class="m" data-step="1"><div class="tag">01 · Evidence first</div><h3>The model only judges</h3><p>The workflow gathers alerts, entities and raw events. For judgement calls the model has no tools at all.</p></div>
+  <div class="m" data-step="1" style="transition-delay:.12s"><div class="tag">02 · No invented IDs</div><h3>Checked before you see it</h3><p>Attack Discovery drops any alert ID the model made up.</p></div>
+  <div class="m" data-step="2"><div class="tag">03 · A human's name</div><h3>Runs as the approver</h3><p>An approved action runs under the identity of the person who clicked Approve.</p></div>
+  <div class="m" data-step="2" style="transition-delay:.12s"><div class="tag">04 · Nothing waits forever</div><h3>72 hours, then expired</h3><p>Undecided proposals are recorded as expired, never quietly dismissed.</p></div>
+  <div class="m" data-step="3"><div class="tag">05 · Guardrails</div><h3>Budgets and back-pressure</h3><p>One sweep at a time per space, hard caps, and a Task Manager headroom check.</p></div>
+  <div class="m" data-step="3" style="transition-delay:.12s"><div class="tag">06 · The honest no</div><h3>Unknown stays unknown</h3><p>Missing telemetry is inconclusive, never false positive. Zero matches are recorded as zero.</p></div>
+</div>
+<div class="paper in3">
+  <div class="hd">INVESTIGATION · A-0031</div>
+  <div class="tt">Malware with service account abuse</div>
+  <div class="cut"></div>
+  <div class="ln" data-step="1" data-fx="fade"><b>EVIDENCE</b><span>3 alerts · 1 attack · 214 events</span></div>
+  <div class="ln" data-step="1" data-fx="fade" style="transition-delay:.15s"><b>QUERY</b><span>FROM logs-endpoint.events.*</span></div>
+  <div class="ln" data-step="1" data-fx="fade" style="transition-delay:.3s"><b>MODEL</b><span>alertzero_frontier · tools: [ ]</span></div>
+  <div class="ln" data-step="1" data-fx="fade" style="transition-delay:.45s"><b>ALERT IDS</b><span>3 of 3 validated</span></div>
+  <div class="cut"></div>
+  <div class="ln k" data-step="2" data-fx="fade"><b>VERDICT</b><span>True positive · 0.91</span></div>
+  <div class="ln" data-step="2" data-fx="fade" style="transition-delay:.15s"><b>REASONS</b><span>rare parent process, service account, external host</span></div>
+  <div class="ln" data-step="2" data-fx="fade" style="transition-delay:.3s"><b>PROPOSAL</b><span>Isolate ws-fin-114</span></div>
+  <div class="ln" data-step="2" data-fx="fade" style="transition-delay:.45s"><b>EXPIRES</b><span>72 h if undecided</span></div>
+  <div class="cut"></div>
+  <div class="ln" data-step="3" data-fx="fade"><b>APPROVED</b><span>analyst · 08:04</span></div>
+  <div class="ln" data-step="3" data-fx="fade" style="transition-delay:.15s"><b>RAN AS</b><span>the analyst, not a service account</span></div>
+  <div class="ln" data-step="3" data-fx="fade" style="transition-delay:.3s"><b>BUDGET</b><span>1 of 1,300 this hour</span></div>
+  <div class="stamp" data-step="3">AUDITED</div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+</body>
+</html>

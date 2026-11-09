@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Proposals, not alerts</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:50px}
+  .panel{position:absolute;left:72px;right:72px;z-index:2}
+  .m{top:196px;height:132px;background:var(--bg)}
+  .a{top:398px;height:134px;border:1.5px solid var(--blue);background:#fff}
+  .lb{position:absolute;left:24px;top:14px;font:600 13px var(--sans);color:var(--blue);letter-spacing:.02em}
+  .lb small{font:500 12px var(--sans);color:var(--grey-l);margin-left:8px;letter-spacing:0}
+  .bx{position:absolute;top:44px;height:68px;background:#fff;border:1.5px solid var(--ink);padding:10px 14px}
+  .bx h3{font:600 15px var(--sans);letter-spacing:-.2px}
+  .bx p{font-size:12px;color:var(--char);margin-top:4px}
+  .a .bx{background:var(--bg);border:0;height:70px}
+  .ho{position:absolute;left:72px;right:72px;top:346px;z-index:3;font:600 13px var(--sans);color:var(--blue)}
+  .ho span{color:var(--ink);font-weight:500;margin-left:6px}
+  .drop{position:absolute;left:960px;top:252px;width:232px;z-index:4;padding:6px 10px;opacity:0;display:flex;align-items:center;justify-content:space-between}
+  .drop .tag{font-size:9.5px;display:flex;justify-content:space-between}
+  .drop h4{font:600 12px var(--sans)}
+  .drop.go{animation:drop 1.4s cubic-bezier(.5,0,.2,1) .3s both}
+  @keyframes drop{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:1;transform:translateY(150px)}}
+  .fb{position:absolute;left:72px;right:72px;top:556px;z-index:3;font:italic 400 15px var(--sans);color:var(--char);display:flex;align-items:center;gap:10px}
+  .fb svg{width:18px;height:18px}
+  #wires{position:absolute;left:0;top:0;width:1280px;height:720px;z-index:3;overflow:visible;pointer-events:none}
+</style>
+</head>
+<body data-foot="04 · Trust and control · Proposals">
+<div class="z">
+  <div class="eyebrow in1">04 · Trust and control · <b>The ideal workflow</b></div>
+  <h1 class="in2">Proposals, <span class="b">not alerts.</span></h1>
+  <p class="sub in3">Everything the machine does arrives as a proposal, never as an action.</p>
+</div>
+<div class="panel m" data-step="1">
+  <div class="lb">THE MACHINE<small>always on: everything it does is a proposal</small></div>
+  <div class="bx" style="left:24px;width:250px"><h3>Reads the intel</h3><p>research → behaviours</p></div>
+  <div class="bx" style="left:302px;width:250px"><h3>Hunts your environment</h3><p>grounded, validated queries</p></div>
+  <div class="bx" style="left:580px;width:250px"><h3>Builds the evidence</h3><p>findings only on real hits</p></div>
+  <div class="bx" style="left:858px;width:254px"><h3>Proposes the action</h3><p>rule or response, ready to run</p></div>
+</div>
+<div class="ho" data-step="2">THE HAND-OFF<span>completed work arrives as a proposal, with evidence, provenance and the query attached</span></div>
+<div class="drop card gate" id="drop"><h4>Proposal · Isolate build-runner-07</h4><span class="v ask">Asks</span></div>
+<div class="panel a" data-step="2">
+  <div class="lb">THE ANALYST<small>on the loop: you hold the controls the machine runs under</small></div>
+  <div class="bx" style="left:24px;width:340px"><h3>Reviews the evidence</h3><p>receipts, not raw alerts</p></div>
+  <div class="bx" style="left:388px;width:340px"><h3>Makes the call</h3><p>approve · tune · escalate · reject</p></div>
+  <div class="bx" style="left:752px;width:356px"><h3>Sets the dial</h3><p>autonomy per Worker, per space</p></div>
+</div>
+<div class="fb" data-step="3"><svg viewBox="0 0 18 18"><path d="M14 5a6 6 0 1 0 1.5 5" fill="none" stroke="#0B64DD" stroke-width="1.8"/><path d="M15 1v5h-5" fill="none" stroke="#0B64DD" stroke-width="1.8"/></svg>Every decision feeds back. Approvals and rejections re-rank what gets hunted next: your judgement trains the queue.</div>
+<svg id="wires" viewBox="0 0 1280 720"></svg>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const svg = document.getElementById('wires');
+  const run = EW.el('path', {d: 'M96,318 H1184', fill: 'none', stroke: 'none'}, svg);
+  const mflow = AZ.flow(run, {n: 5, dur: 3.6, r: 4, fill: '#0B64DD', shape: 'rect', on: false});
+  [346, 624, 902].forEach(x => EW.el('path', {d: `M${x},274 h22 m-6,-5 l6,5 l-6,5`, fill: 'none', stroke: '#1D1E24', 'stroke-width': 1.2, class: 'in4'}, svg));
+  const ar = EW.el('g', {opacity: 0}, svg); ar.style.transition = 'opacity .5s';
+  [436, 800].forEach(x => EW.el('path', {d: `M${x},486 h22 m-6,-5 l6,5 l-6,5`, fill: 'none', stroke: '#1D1E24', 'stroke-width': 1.2}, ar));
+  const loop = EW.el('path', {d: 'M72,470 H48 V262 H96', fill: 'none', stroke: '#0B64DD', 'stroke-width': 1.5, 'stroke-dasharray': '5 4', opacity: 0}, svg);
+  loop.style.transition = 'opacity .5s';
+  const lflow = AZ.flow(loop, {n: 2, dur: 2.4, r: 4, fill: '#0B64DD', on: false});
+  const drop = document.getElementById('drop');
+  AZ.on((s, dir) => {
+    mflow.on = s >= 1;
+    ar.setAttribute('opacity', s >= 2 ? 1 : 0);
+    drop.classList.remove('go'); void drop.offsetWidth;
+    if (s >= 2){ if (dir > 0 && !AZ.still && s === 2) drop.classList.add('go'); else { drop.style.opacity = 1; drop.style.transform = 'translateY(150px)'; } }
+    else { drop.style.opacity = 0; drop.style.transform = ''; }
+    loop.setAttribute('opacity', s >= 3 ? 1 : 0); lflow.on = s >= 3;
+  });
+})();
+</script>
+</body>
+</html>

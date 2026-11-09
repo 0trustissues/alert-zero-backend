@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>4 reports, 4 honest answers</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:50px}
+  .sub{font-size:16.5px;max-width:1080px}
+  .g{position:absolute;left:72px;right:72px;top:206px;display:grid;grid-template-columns:120px repeat(4,1fr);column-gap:16px;z-index:2}
+  .rl{font:600 11px var(--mono);letter-spacing:.07em;text-transform:uppercase;padding-top:14px}
+  .col{display:flex;flex-direction:column;gap:12px}
+  .sc{display:flex;align-items:center;gap:12px;background:var(--bg);padding:8px;height:58px}
+  .sc b{width:42px;height:42px;flex:none;background:var(--blue);color:#fff;font:600 22px var(--mono);display:flex;align-items:center;justify-content:center}
+  .sc span{font:600 15px/1.2 var(--sans)}
+  .story{border:1.5px solid var(--slate);border-radius:6px;padding:14px 16px;height:150px;font-size:14px;line-height:1.5;color:var(--char)}
+  .pill{height:42px;border-radius:21px;display:flex;align-items:center;justify-content:center;font:700 13px var(--sans);letter-spacing:.04em;color:#fff}
+  .rows{display:grid;grid-template-rows:58px 150px 42px;row-gap:12px}
+  #links{position:absolute;left:0;top:0;width:1280px;height:720px;z-index:3;overflow:visible;pointer-events:none}
+  #links text{font:600 10.5px var(--mono);letter-spacing:.05em}
+  .pipe{position:absolute;left:72px;right:72px;top:612px;font:600 13px var(--mono);letter-spacing:.06em;color:var(--grey-l);z-index:2}
+  .pipe span{font:400 14px var(--sans);letter-spacing:0;color:var(--char);margin-left:10px}
+  .pipe i{font-style:normal;transition:color .3s}
+  .pipe i.lit{color:var(--blue)}
+</style>
+</head>
+<body data-foot="05 · See it run · The hunting front" data-steps="5">
+<div class="z">
+  <div class="eyebrow in1">05 · See it run · <b>The hunting front</b></div>
+  <h1 class="in2">4 reports, <span class="b">4 honest answers.</span></h1>
+  <p class="sub in3">The hunt finds, correlates, refuses to connect what isn't connected, and stays silent when nothing is there.</p>
+</div>
+<div class="g">
+  <div class="rows in3"><div class="rl">Scenario</div><div class="rl">The story</div><div class="rl">Verdict</div></div>
+  <div class="col rows" data-step="1"><div class="sc"><b>A</b><span>axios supply chain</span></div><div class="story">Backdoored axios@1.14.1 ships a RAT through a phantom dependency. Our own build runner installed it during CI.</div><div class="pill" style="background:var(--blue)">FOUND IN ENV</div></div>
+  <div class="col rows" data-step="2"><div class="sc"><b>B</b><span>stolen CI creds</span></div><div class="story">Keys harvested by that RAT light up in AWS, calling from attacker infrastructure. Same operation, second stage.</div><div class="pill" style="background:#13307A">SAME CAMPAIGN</div></div>
+  <div class="col rows" data-step="3"><div class="sc"><b>C</b><span>Okta help desk</span></div><div class="story">Help-desk vishing, an MFA strip, an admin grab. All real hits, but the tradecraft points to a different actor.</div><div class="pill" style="background:var(--pink)">HONEST NO-LINK</div></div>
+  <div class="col rows" data-step="4"><div class="sc"><b>D</b><span>edge appliances</span></div><div class="story">A CISA advisory on VPN appliances we don't run. The hunt ran, matched nothing, and wrote nothing.</div><div class="pill" style="background:#8A94A6">QUIET CONTROL</div></div>
+</div>
+<svg id="links" viewBox="0 0 1280 720"></svg>
+<div class="pipe in4"><i>INGEST</i> → <i>HUNT</i> → <i>FIND</i> → <i>CORRELATE</i> ↻ <i>RERANK NEXT</i><span>The same pipeline every time, whether it finds something or nothing.</span></div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const svg = document.getElementById('links');
+  const cw = (1136 - 120 - 16 * 4) / 4, cx = i => 72 + 120 + 16 + i * (cw + 16) + cw / 2, Y = 206 + 58 + 12 + 150 + 12 + 42 + 22;
+  const mk = step => { const g = EW.el('g', {opacity: 0}, svg); g.style.transition = 'opacity .5s'; g.dataset.k = step; return g; };
+  // A ↔ B: one campaign
+  const ab = mk(5);
+  const pab = EW.el('path', {d: `M${cx(0)},${Y - 22} V${Y} H${cx(1)} V${Y - 22}`, fill: 'none', stroke: '#0B64DD', 'stroke-width': 2}, ab);
+  const tab = EW.el('text', {x: (cx(0) + cx(1)) / 2, y: Y + 18, 'text-anchor': 'middle', fill: '#0B64DD'}, ab); tab.textContent = 'CORRELATED · ONE OPERATION';
+  AZ.flow(pab, {n: 2, dur: 2, r: 4, fill: '#0B64DD', parent: ab, shape: 'rect'});
+  // B ✕ C: refused
+  const bc = mk(5);
+  EW.el('path', {d: `M${cx(1) + 70},${Y} H${(cx(1) + cx(2)) / 2 - 12} M${(cx(1) + cx(2)) / 2 + 12},${Y} H${cx(2) - 30}`, fill: 'none', stroke: '#F04E98', 'stroke-width': 2, 'stroke-dasharray': '5 4'}, bc);
+  const x = (cx(1) + cx(2)) / 2;
+  EW.el('path', {d: `M${x - 7},${Y - 7} L${x + 7},${Y + 7} M${x + 7},${Y - 7} L${x - 7},${Y + 7}`, stroke: '#F04E98', 'stroke-width': 2.4}, bc);
+  const tbc = EW.el('text', {x, y: Y + 18, 'text-anchor': 'middle', fill: '#D6337F'}, bc); tbc.textContent = 'NOT LINKED · DIFFERENT ACTOR';
+  // D: nothing
+  const d = mk(5);
+  const td = EW.el('text', {x: cx(3), y: Y + 4, 'text-anchor': 'middle', fill: '#69707D'}, d); td.textContent = '0 MATCHES · 0 FINDINGS';
+  const groups = [ab, bc, d], words = [...document.querySelectorAll('.pipe i')];
+  let s0 = 0;
+  AZ.on(s => { s0 = s; groups.forEach(g => g.setAttribute('opacity', s >= +g.dataset.k ? 1 : 0)); });
+  EW.loop(t => { const k = Math.floor(t / .7) % (words.length + 2); words.forEach((w, i) => w.classList.toggle('lit', s0 >= 5 && i === k)); });
+})();
+</script>
+</body>
+</html>

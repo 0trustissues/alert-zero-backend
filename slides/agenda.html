@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Agenda</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{max-width:470px;font-size:50px}
+  .sub{font-size:17px;max-width:440px}
+  .list{position:absolute;left:612px;top:96px;width:596px;z-index:2}
+  .row{position:relative;display:grid;grid-template-columns:64px 1fr;gap:16px;align-items:start;padding:17px 0 17px;border-top:1px solid var(--line)}
+  .row:last-child{border-bottom:1px solid var(--line)}
+  .row .n{font:500 30px/1 var(--mono);color:var(--blue);letter-spacing:-1px}
+  .row h3{font:600 21px/1.15 var(--sans);letter-spacing:-.4px}
+  .row p{font-size:13.5px;line-height:1.45;color:var(--grey);margin-top:5px}
+  .row.hero h3::after{content:'Deep dive';margin-left:10px;font:600 9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--pink);border:1px solid var(--pink);padding:2px 6px;vertical-align:4px}
+  .here{position:absolute;left:-26px;top:22px;width:10px;height:10px;background:var(--blue)}
+  .here::after{content:'';position:absolute;inset:0;border:1.5px solid var(--blue);animation:az-pulse 2s ease-out 1.6s infinite}
+</style>
+</head>
+<body data-foot="AlertZero · Agenda">
+<div class="z">
+  <div class="eyebrow in1">Agenda</div>
+  <h1 class="in2">Five chapters. <span class="b">One new way to run the SOC.</span></h1>
+  <p class="sub in3">Why the queue breaks, how AlertZero works it, and how you stay in command. Then we watch it run.</p>
+</div>
+<div class="list">
+  <div class="row in2"><i class="here"></i><span class="n">01</span><div><h3>Why now</h3><p>Attackers got cheaper and faster. The analyst's queue did not.</p></div></div>
+  <div class="row in3"><span class="n">02</span><div><h3>The platform</h3><p>One data foundation. Prevention that clears the floor first.</p></div></div>
+  <div class="row hero in4"><span class="n">03</span><div><h3>Introducing AlertZero</h3><p>Watches, Workers and hand-offs: how the agentic layer really works.</p></div></div>
+  <div class="row in5"><span class="n">04</span><div><h3>Trust and control</h3><p>Proposals, the autonomy dial and the receipts behind every finding.</p></div></div>
+  <div class="row in6"><span class="n">05</span><div><h3>See it run</h3><p>One night end to end, four honest answers, then the live demo.</p></div></div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+  EW.dots({x: 0, y: 420, w: 560, h: 260, seed: 12, blobs: 4, thr: .55});
+</script>
+</body>
+</html>

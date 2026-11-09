@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The attacker side</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  .grid{position:absolute;left:72px;right:72px;top:222px;height:410px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;z-index:2}
+  .c{background:var(--bg);padding:24px 22px 20px;display:flex;flex-direction:column;position:relative}
+  .c .tag{font-size:10.5px}
+  .c .stat{font:500 50px/1 var(--mono);letter-spacing:-2px;margin-top:22px;white-space:nowrap}
+  .c .stat small{font-size:.5em;letter-spacing:-.5px;margin-left:4px}
+  .c .ru{width:28px;height:3px;background:var(--teal);margin-top:16px}
+  .c h3{font:600 16px/1.3 var(--sans);letter-spacing:-.2px;margin-top:20px}
+  .c p{font-size:13px;line-height:1.45;color:var(--grey);margin-top:8px}
+  .viz{margin-top:auto;height:74px;border-top:1px dashed var(--line);padding-top:12px;position:relative}
+  .viz .lb{font:500 9.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--grey)}
+  /* 1: cost bars */
+  .bars div{display:grid;grid-template-columns:78px 1fr;gap:8px;align-items:center;margin-bottom:8px}
+  .bars .tr{height:10px;background:#fff;position:relative}
+  .bars .tr i{position:absolute;left:0;top:0;bottom:0;background:var(--slate);width:100%}
+  .bars .ai i{background:var(--blue);width:100%;transition:width 1.4s cubic-bezier(.6,0,.2,1) .5s}
+  .c.on .bars .ai i{width:15%}
+  /* 2: CVE blocks */
+  .blocks{display:flex;flex-wrap:wrap;gap:2px;width:100%}
+  .blocks i{width:9px;height:9px;background:var(--slate-l);transition:background .2s}
+  .blocks i.f{background:var(--blue)}
+  .blocks i.z{background:var(--pink)}
+  /* 3: +42 */
+  .cmp div{display:grid;grid-template-columns:78px 1fr;gap:8px;align-items:center;margin-bottom:8px}
+  .cmp .tr{height:10px;position:relative}
+  .cmp .tr i{position:absolute;left:0;top:0;bottom:0;background:var(--slate);transform-origin:left;transform:scaleX(0);transition:transform 1s cubic-bezier(.2,.7,.2,1) .4s}
+  .cmp .hot i{background:var(--blue);transition-delay:.8s}
+  .c.on .cmp .tr i{transform:none}
+  /* 4: clock */
+  .clock{display:flex;align-items:center;gap:14px}
+  .clock svg{width:58px;height:58px;overflow:visible}
+  .stack{display:flex;flex-wrap:wrap;gap:3px;width:150px;align-content:flex-start;height:58px;overflow:hidden}
+  .stack i{width:9px;height:9px;background:#E0352B;animation:pop .35s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes pop{from{transform:scale(0)}to{transform:none}}
+</style>
+</head>
+<body data-foot="01 · Why now · The attacker side">
+<div class="z">
+  <div class="eyebrow in1">01 · Why now · <b>The attacker side</b></div>
+  <h1 class="in2">Cheaper. Everywhere. <span class="b">Faster.</span></h1>
+  <p class="sub in3">AI changed the economics of attack first. Four numbers from 2026 show why a queue worked by hand falls behind.</p>
+</div>
+<div class="grid">
+  <div class="c" data-step="1">
+    <div class="tag">Economics of attack</div>
+    <div class="stat b">80–<span data-n="90">0</span>%</div>
+    <div class="ru"></div>
+    <h3>Reduction in cost to build custom malware with AI</h3>
+    <p>What once required a skilled team now requires only a prompt.</p>
+    <div class="viz bars"><div><span class="lb">Before AI</span><span class="tr"><i></i></span></div><div><span class="lb">With AI</span><span class="tr ai"><i></i></span></div></div>
+  </div>
+  <div class="c" data-step="2">
+    <div class="tag">Vulnerability surge</div>
+    <div class="stat b"><span data-n="100" data-post="+">0</span><small>CVEs</small></div>
+    <div class="ru"></div>
+    <h3>Per month in 2026, with 6 zero-days patched in February alone</h3>
+    <p>Manual patch cycles can no longer keep pace.</p>
+    <div class="viz"><div class="blocks" id="cves"></div></div>
+  </div>
+  <div class="c" data-step="3">
+    <div class="tag">Zero-day exploitation</div>
+    <div class="stat b"><span data-n="42" data-pre="+" data-post="%">0</span></div>
+    <div class="ru"></div>
+    <h3>More zero-days exploited before public disclosure</h3>
+    <p>AI agents run autonomous fuzzing and vulnerability discovery.</p>
+    <div class="viz cmp"><div><span class="lb">Last year</span><span class="tr"><i style="width:70%"></i></span></div><div><span class="lb">2026</span><span class="tr hot"><i style="width:100%"></i></span></div></div>
+  </div>
+  <div class="c" data-step="4">
+    <div class="tag">Breakout velocity</div>
+    <div class="stat b"><small style="margin:0 6px 0 0">Every</small><span data-n="7">0</span><small>min</small></div>
+    <div class="ru"></div>
+    <h3>A new vulnerability is identified and published globally</h3>
+    <p>September 2026 Patch Tuesday set a record: 966 fixes in a single release.</p>
+    <div class="viz clock"><svg viewBox="-30 -30 60 60"><circle r="26" fill="#fff" stroke="#1D1E24" stroke-width="1.2"/><circle id="arc" r="26" fill="none" stroke="#0B64DD" stroke-width="3" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" transform="rotate(-90)"/><line id="hand" x1="0" y1="0" x2="0" y2="-19" stroke="#1D1E24" stroke-width="1.6" stroke-linecap="round"/><circle r="2.2" fill="#1D1E24"/></svg><div class="stack" id="stack"></div></div>
+  </div>
+</div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  EW.dots({x: 820, y: 30, w: 460, h: 190, seed: 31, blobs: 4, thr: .5});
+  // 100 CVEs fill in; six of them are zero-days
+  const cv = document.getElementById('cves'), zs = new Set([7, 23, 41, 58, 76, 93]), cells = [];
+  for (let i = 0; i < 100; i++){ const b = document.createElement('i'); cv.appendChild(b); cells.push(b); }
+  let fillT = null;
+  AZ.on(s => {
+    clearInterval(fillT);
+    if (s < 2){ cells.forEach(c => c.className = ''); return; }
+    let i = cells.findIndex(c => !c.className); if (i < 0) return;
+    if (AZ.still){ cells.forEach((c, k) => c.className = zs.has(k) ? 'z' : 'f'); return; }
+    fillT = setInterval(() => { if (i >= 100) return clearInterval(fillT); cells[i].className = zs.has(i) ? 'z' : 'f'; i++; }, 14);
+  });
+  // the clock: one lap is "7 minutes"; every lap a new vulnerability lands
+  const arc = document.getElementById('arc'), hand = document.getElementById('hand'), stack = document.getElementById('stack');
+  let start = null, laps = 0;
+  AZ.on(s => { if (s >= 4 && start === null){ start = performance.now(); } if (s < 4){ start = null; laps = 0; stack.innerHTML = ''; } });
+  EW.loop(() => {
+    if (start === null) return;
+    const t = (performance.now() - start) / 1000, k = (t / 2.2) % 1, lap = Math.floor(t / 2.2);
+    arc.setAttribute('stroke-dashoffset', 1 - k); hand.setAttribute('transform', `rotate(${k * 360})`);
+    while (laps < lap && laps < 60){ laps++; stack.appendChild(document.createElement('i')); }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Detection Watch</title>
+<link rel="stylesheet" href="style/eweb.css">
+<link rel="stylesheet" href="style/az.css">
+<style>
+  h1{font-size:48px}
+  .sub{font-size:16.5px;max-width:1000px}
+  .halves{position:absolute;left:72px;right:72px;top:200px;height:390px;display:grid;grid-template-columns:1fr 1fr;gap:28px;z-index:2}
+  .hf{border-top:2px solid var(--ink);padding-top:12px;display:flex;flex-direction:column}
+  .hf .top{display:flex;justify-content:space-between;align-items:baseline}
+  .hf h2{font:600 22px var(--sans);letter-spacing:-.5px}
+  .hf .meta{font:500 10.5px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--grey)}
+  .gap{margin-top:12px;padding:10px 12px;background:#FFF6D6;border-left:3px solid var(--yellow);font-size:12.5px;color:var(--char)}
+  .gap b{color:var(--ink)}
+  .ladder{margin-top:12px;display:flex;flex-direction:column;gap:7px;position:relative}
+  .rung{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;padding:9px 12px;border:1px solid var(--line);background:#fff;font-size:13.5px;transition:border-color .3s,background .3s}
+  .rung .i{font:600 12px var(--mono);color:var(--grey)}
+  .rung small{font:600 10px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--grey)}
+  .rung.chk{border-color:var(--slate);background:var(--bg)}
+  .rung.pick{border-color:var(--blue);box-shadow:4px 4px 0 var(--blue)}
+  .rung.pick small{color:var(--blue)}
+  .prop{margin-top:auto;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+  .prop h4{font:600 13.5px var(--sans)}
+  .trig{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .trig div{padding:10px 12px;background:var(--bg)}
+  .trig b{font:600 22px var(--mono);color:var(--blue);letter-spacing:-.5px;display:block}
+  .trig span{font-size:11.5px;color:var(--char)}
+  .hit{margin-top:10px;font-size:12.5px;color:var(--char)}
+  .hit b{color:var(--ink)}
+  .chart{margin-top:10px;height:118px;display:flex;align-items:flex-end;gap:14px;padding:0 4px 0;border-bottom:1px solid var(--ink);position:relative}
+  .day{flex:1;display:flex;align-items:flex-end;gap:3px;height:100%}
+  .day i{flex:1;transform-origin:bottom;transform:scaleY(0);transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+  .day i.o{background:var(--slate)}
+  .day i.n{background:var(--blue)}
+  .bt.on .day i{transform:none}
+  .lgd{display:flex;gap:14px;margin-top:6px;font:500 9.5px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--grey)}
+  .lgd i{display:inline-block;width:8px;height:8px;margin-right:5px}
+  .banner{position:absolute;left:72px;right:72px;top:608px;height:44px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;gap:10px;font:600 15px var(--sans);z-index:3}
+  .banner .v{border-color:#FEC514;color:#FEC514;background:none}
+</style>
+</head>
+<body data-foot="03 · AlertZero · Detection Watch">
+<div class="z">
+  <div class="eyebrow in1">03 · Detection Watch · <b>Rule Coverage + Rule Tuning</b></div>
+  <h1 class="in2">Fix the rule, <span class="b">not the symptom.</span></h1>
+  <p class="sub in3">One Worker closes the coverage gaps the hunt found. The other tunes the rules your analysts keep closing.</p>
+</div>
+<div class="halves">
+  <div class="hf" data-step="1">
+    <div class="top"><h2>Rule Coverage</h2><span class="meta">every 1 h · up to 5 gaps</span></div>
+    <div class="gap"><b>Gap from Hunt Watch:</b> node → sh → curl during npm install. No enabled rule would have fired.</div>
+    <div class="ladder" data-step="2">
+      <div class="rung" id="r1"><span class="i">01</span>Enable a disabled rule<small id="s1">checking</small></div>
+      <div class="rung" id="r2"><span class="i">02</span>Install a prebuilt rule<small id="s2">checking</small></div>
+      <div class="rung" id="r3"><span class="i">03</span>Draft a new ES|QL rule, previewed<small id="s3">checking</small></div>
+    </div>
+    <div class="prop card gate" data-step="2" style="transition-delay:1.6s"><h4>Create rule, disabled until you enable it</h4><span class="v ask">Asks</span></div>
+  </div>
+  <div class="hf" data-step="3">
+    <div class="top"><h2>Rule Tuning</h2><span class="meta">every 2 h · 7-day window</span></div>
+    <div class="trig"><div><b>≥ 10</b><span>false positives closed</span></div><div><b>≥ 50%</b><span>false-positive rate</span></div></div>
+    <p class="hit"><b>Firewall Denied Connection Burst</b> qualifies: the noise comes from the corporate vulnerability scanner.</p>
+    <div class="bt" data-step="4">
+      <div class="chart" id="chart"></div>
+      <div class="lgd"><span><i style="background:var(--slate)"></i>Current rule</span><span><i style="background:var(--blue)"></i>With exception</span><span>Rule preview backtest · illustrative</span></div>
+    </div>
+    <div class="prop card gate" data-step="4" style="transition-delay:.9s"><h4>Add exception: source is the scanner range</h4><span class="v ask">Asks</span></div>
+  </div>
+</div>
+<div class="banner" data-step="5">Rule changes always ask a person, at every autonomy level <span class="v">Always gated</span></div>
+<script src="style/eweb.js"></script>
+<script src="style/az.js"></script>
+<script src="/js/fuckslides.js"></script>
+<script>
+(function(){
+  const old = [.78, .92, .66, .84, 1, .71, .88], neu = [.14, .2, .1, .18, .22, .12, .16];
+  document.getElementById('chart').innerHTML = old.map((o, i) => `<div class="day"><i class="o" style="height:${o * 100}%;transition-delay:${i * .06}s"></i><i class="n" style="height:${neu[i] * 100}%;transition-delay:${.4 + i * .06}s"></i></div>`).join('');
+  // cheapest fix first: walk down the ladder until something closes the gap
+  const R = [1, 2, 3].map(i => [document.getElementById('r' + i), document.getElementById('s' + i)]);
+  let timers = [];
+  AZ.on((s, dir) => {
+    timers.forEach(clearTimeout); timers = [];
+    const set = (i, st) => { const [r, l] = R[i]; r.className = 'rung' + (st === 'none' ? ' chk' : st === 'pick' ? ' pick' : ''); l.textContent = st === 'none' ? 'none fits' : st === 'pick' ? 'chosen' : 'checking'; };
+    if (s < 2){ [0, 1, 2].forEach(i => set(i, 'idle')); return; }
+    if (dir <= 0 || AZ.still){ set(0, 'none'); set(1, 'none'); set(2, 'pick'); return; }
+    [0, 1, 2].forEach(i => set(i, 'idle'));
+    timers.push(setTimeout(() => set(0, 'none'), 600), setTimeout(() => set(1, 'none'), 1100), setTimeout(() => set(2, 'pick'), 1500));
+  });
+})();
+</script>
+</body>
+</html>
